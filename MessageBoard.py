@@ -32,6 +32,7 @@ class MessageBoard:
                     newSendList.append(sent)
                 else:
                     self.sent.append(sent)
+                    print("acc was recognized as for my sent message")
             self.toBeSent = newSendList #remove from send list
         else:
             self.sendAcc(message)

@@ -23,7 +23,9 @@ class Message:
         self.hasBeenAcced = hasBeenAcced
 
     def getSender(self):
-        return str(self.sender)
+        return self.sender
+    def getTarget(self):
+        return self.target
 
     def getContent(self):
         return self.content
@@ -45,5 +47,5 @@ class Message:
 
         return message
 
-    def isAccForMessage(self, ackMessage):
-        return self.content == ackMessage.content and self.target == ackMessage.target
+    def isAccForMessage(self, message):
+        return self.content == message.content and self.target == message.target

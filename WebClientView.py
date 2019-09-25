@@ -1,4 +1,6 @@
 from Message import Message
+from unquote import unquote
+
 
 class WebClientView:
 
@@ -26,35 +28,51 @@ class WebClientView:
 
                 print(allThemParts)
 
-                #print("Message was" + messageContent)
-                message = Message(allThemParts.get("message"), allThemParts.get("target"), self.meshNetworkState.getIP(), 0, False, False)
-                self.messageBoard.sendMessage(message);
+                mess = unquote(allThemParts.get("message"))
+                tar = unquote(allThemParts.get("target"))
+                message = Message(mess.decode(), tar.decode(), self.meshNetworkState.getIP(), 0, False, False)
+                self.messageBoard.sendMessage(message)
             if not line or strline == '\r\n':
                 break
 
     def getNeighborsHTML(self):
-        ret = "<h2>Neighborhood</h2>"
+        ret = "<h2>Me</h2>"
         nodeHTML = self._getNodeHTML(self.meshNetworkState.me)
         ret += "<p>Me: " + nodeHTML + "</p>"
+        ret += "<h2>Neighborhood</h2>"
         ret += "<table>"
         #print(self.meshNetworkState.getNeighbors());
         for neigh in self.meshNetworkState.getNeighbors():
             nodeHTML = self._getNodeHTML(neigh)
-            ret += "<tr><td><a onclick='document.getElementById(\"idtarget\").value=\"" + neigh.getIP() + "\"'>" + nodeHTML + "</a></td></tr>"
+            ret += "<tr><td><a onclick='document.getElementById(\"idtarget\").value=\"" + str(neigh.getIP()) + "\"'>" + nodeHTML + "</a></td></tr>"
         ret += "</table>"
 
+        ret += "<h2>Routers</h2>"
         ret += "<table>"
         #print(self.meshNetworkState.getNeighbors());
         for neigh in self.meshNetworkState.getRouters():
             nodeHTML = self._getNodeHTML(neigh)
-            ret += "<tr><td><a onclick='document.getElementById(\"idtarget\").value=\"" + neigh.getIP() + "\"'>" + nodeHTML + "</a></td></tr>"
+            ret += "<tr><td><a onclick='document.getElementById(\"idtarget\").value=\"" + str(neigh.getIP()) + "\"'>" + nodeHTML + "</a></td></tr>"
         ret += "</table>"
         return ret;
+
+    def _translateRole(self, role):
+        if role == 0:
+            return "Disabled"
+        elif role == 1:
+            return "Detached"
+        elif role == 2:
+            return "Child"
+        elif role == 3:
+            return "Router"
+        else:
+            return "Leader"
 
     def _getNodeHTML(self, node):
         html = "<dl>";
         html += "<dt>IP</dt><dd>" + str(node.ip) + "</dd>"
         html += "<dt>MAC</dt><dd>" + str(node.mac) + "</dd>"
+        html += "<dt>role</dt><dd>" + self._translateRole(node.role) + "</dd>"
         html += "<dt>rloc16</dt><dd>" + str(node.rloc16) + "</dd>"
         html += "<dt>rssi</dt><dd>" + str(node.rssi) + "</dd>"
         html += "<dt>age</dt><dd>" + str(node.age) + "</dd>"
@@ -93,8 +111,9 @@ class WebClientView:
 
     def _getMessageHTML(self, message):
         messageHTML = ""
-        messageHTML += "<td>" + message.getSender() + "</td>"
-        messageHTML += "<td>" + message.getContent() + "</td>"
+        messageHTML += "<td>From: " + str(message.getSender()) + "</td>"
+        messageHTML += "<td>To: " + str(message.getTarget()) + "</td>"
+        messageHTML += "<td>Content: " + str(message.getContent()) + "</td>"
         messageHTML += "<td>" + message.toString() + "</td>"
 
         return messageHTML

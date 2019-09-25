@@ -90,7 +90,7 @@ class LoraMeshAdapter:
 
             # update neighbors list
             neigbors = self.mesh.neighbors_ip()
-            #print("%d neighbors, IPv6 list: %s"%(len(neigbors), neigbors))
+            print("%d neighbors, IPv6 list: %s"%(len(neigbors), neigbors))
 
             # send PING and UDP packets to all neighbors
             for neighbor in neigbors:
