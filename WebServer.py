@@ -1,19 +1,18 @@
 import socket
 import _thread
-from Message import Message
+
 from WebClientView import WebClientView
 
 class WebServer:
 
 
-    def __init__(self, webClientView, messageBoard):
+    def __init__(self, webClientView):
         addr = socket.getaddrinfo('0.0.0.0', 80)[0][-1]
         self.s = socket.socket()
         self.s.bind(addr)
         self.s.listen(1)
         _thread.start_new_thread(WebServer.handleAccept, (self.s, self))
         self.webClientView = webClientView
-        self.messageBoard = messageBoard;
         print("started webserver");
 
     def handleAccept(s, this):
@@ -21,11 +20,9 @@ class WebServer:
         <html>
             <head> <title>ESP8266 Pins</title> </head>
             <body>
-                <form method="get">
-                    <input type='text' name='message'>
-                    <input type="submit" value="Submit">
-                </form>
+
                 <h1>Message Log</h1>
+                <a href="http://192.168.1.1">reload</a>
                 """
 
         htmlEnd = """</body>
@@ -37,19 +34,11 @@ class WebServer:
             cl, addr = s.accept()
             print('client connected from', addr)
             cl_file = cl.makefile()
-            while True:
-                line = cl_file.readline()
-                strline = line.decode();
-                if strline.startswith("GET /?message="):
-                    messageEnd = strline.find(" HTTP/1.1")
-                    messageContent = strline[14:messageEnd];
-                    #print("Message was" + messageContent)
-                    message = Message(messageContent, "world", addr, 0, False, False)
-                    this.messageBoard.sendMessage(message);
-                if not line or strline == '\r\n':
-                    break
+            this.webClientView.handleRequest(cl_file, addr);
 
-            messageBoardHTML = this.webClientView.getMessagesHTML();
+            messageBoardHTML = this.webClientView.getFormHTML()
+            messageBoardHTML += this.webClientView.getMessagesHTML()
+            messageBoardHTML += this.webClientView.getNeighborsHTML()
             response = htmlStart + messageBoardHTML + htmlEnd
 
             cl.send(response)

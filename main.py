@@ -7,10 +7,10 @@
 # see the Pycom Licence v1.0 document supplied with this file, or
 # available at https://www.pycom.io/opensource/licensing
 #
-from LoraMeshChat import LoraMeshChat
+from LoraMeshChatApplication import LoraMeshChatApplication
 import sys
 
-app = LoraMeshChat()
+app = LoraMeshChatApplication()
 print("init done");
 while True:
     app.update()

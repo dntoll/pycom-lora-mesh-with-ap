@@ -12,22 +12,25 @@ __version__ = '1'
 
 from WifiAP import WifiAP
 from WebServer import WebServer
-from MeshChat import MeshChat
+from LoraMeshAdapter import LoraMeshAdapter
+from MeshNetworkState import MeshNetworkState
 from MessageBoard import MessageBoard
 from WebClientView import WebClientView
 import time
 import machine
 
-class LoraMeshChat:
+class LoraMeshChatApplication:
     """ Class for chatting over Lora """
 
     def __init__(self):
         self.messageBoard = MessageBoard()
 
-        self.view = WebClientView(self.messageBoard)
-        self.mesh = MeshChat(self.messageBoard)
+        self.meshState = MeshNetworkState();
+        self.mesh = LoraMeshAdapter(self.messageBoard, self.meshState)
+        self.view = WebClientView(self.messageBoard, self.meshState)
+
         self.ap = WifiAP()
-        self.www = WebServer(self.view, self.messageBoard)
+        self.www = WebServer(self.view)
 
 
     def update(self):

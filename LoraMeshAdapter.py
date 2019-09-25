@@ -36,15 +36,20 @@ def receive_pack(tuple):
     #    print(rcv_data)
 
         strData = rcv_data.decode();
-        message = Message.fromString(strData)
+        try:
+            message = Message.fromString(strData)
+            print(message);
+            messageBoard.receiveMessage(message)
+        except Exception as e:
+            print("something went wrong in receive_pack" + repr(e) +" Data: "+ repr(strData))
+            pass
 
-        print(message);
 
-        messageBoard.receiveMessage(message);
+class LoraMeshAdapter:
+    def __init__(self, messageBoard, meshNetworkState):
+        self.messageBoard = messageBoard
+        self.meshNetworkState = meshNetworkState;
 
-
-class MeshChat:
-    def __init__(self, messageBoard):
         pycom.wifi_on_boot(False)
         pycom.heartbeat(False)
         self.lora = LoRa(mode=LoRa.LORA, region=LoRa.EU868, bandwidth=LoRa.BW_125KHZ, sf=7)
@@ -57,31 +62,35 @@ class MeshChat:
         sockets.append(self.s)
         self.mesh.mesh.rx_cb(receive_pack, (sockets, messageBoard))
         self.pack_num = 0
-        self.ip = self.mesh.ip()
-        self.messageBoard = messageBoard
+
+        self.meshNetworkState.setSelfInfo(self.mesh.ip(), self.MAC, self.mesh.state, self.mesh.rloc);
+
+
         #print("self.ip")
         #print(self.ip)
 
+    def getIP(self):
+        return self.mesh.ip();
+
+    def getNeighbors(self):
+        return self.mesh.neighbors_ip();
 
     def update(self):
         # check if topology changes, maybe RLOC IPv6 changed
-        new_ip = self.mesh.ip()
-        if self.ip != new_ip:
-            print("IP changed from: %s to %s"%(self.ip, new_ip))
-            self.ip = new_ip
+        self.meshNetworkState.setSelfInfo(self.mesh.ip(), self.MAC, self.mesh.state, self.mesh.rloc);
 
         if not self.mesh.is_connected():
             self.mesh.led_state()
             print("%d: State %s, single %s"%(time.time(), self.mesh.cli('state'), self.mesh.cli('singleton')))
         else:
-            #print('Neighbors found: %s'%self.mesh.neighbors())
+            self.meshNetworkState.setNeighbors(self.mesh.neighbors(), self.mesh.neighbors_ip(), self.mesh.mesh.routers(), self.mesh.mesh.ipaddr())
 
             self.mesh.led_state()
             #print("%d: State %s, single %s"%(time.time(), self.mesh.cli('state'), self.mesh.cli('singleton')))
 
             # update neighbors list
             neigbors = self.mesh.neighbors_ip()
-            print("%d neighbors, IPv6 list: %s"%(len(neigbors), neigbors))
+            #print("%d neighbors, IPv6 list: %s"%(len(neigbors), neigbors))
 
             # send PING and UDP packets to all neighbors
             for neighbor in neigbors:
