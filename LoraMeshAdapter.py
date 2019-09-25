@@ -93,27 +93,14 @@ class LoraMeshAdapter:
             print("%d neighbors, IPv6 list: %s"%(len(neigbors), neigbors))
 
             # send PING and UDP packets to all neighbors
-            for neighbor in neigbors:
-                '''if self.mesh.ping(neighbor) > 0:
-                    print('Ping OK from neighbor %s'%neighbor)
-                    self.mesh.blink(10, .1)
-                else:
-                    print('Ping not received from neighbor %s'%neighbor)
 
-                #print("sleep after ping")
-                time.sleep(1)'''
-
-
-                for message in self.messageBoard.getMessagesToBeSent():
-                    message.doSend();
-                    try:
-                        theContent = message.toString();
-                        self.s.sendto(theContent, (neighbor, self.myport))
-                        print('Sent message to %s %s'%(neighbor, repr(theContent)))
-                    except Exception as e:
-                        print("something went wrong" + repr(e))
-                        pass
-                    #sleep between neighbors
-                    #print("sleep between neigbors")
-                    time.sleep(1)
-                self.messageBoard.sendCompleted()
+            for message in self.messageBoard.getMessagesToBeSent():
+                message.doSend();
+                try:
+                    theContent = message.toString();
+                    self.s.sendto(theContent, (message.target, self.myport))
+                    print('Sent message to %s %s'%(message.target, repr(theContent)))
+                except Exception as e:
+                    print("something went wrong when sending message " + repr(e))
+                    pass
+            self.messageBoard.sendCompleted()

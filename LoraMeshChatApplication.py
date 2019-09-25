@@ -23,9 +23,10 @@ class LoraMeshChatApplication:
     """ Class for chatting over Lora """
 
     def __init__(self):
-        self.messageBoard = MessageBoard()
+        self.meshState = MeshNetworkState()
+        self.messageBoard = MessageBoard(self.meshState)
 
-        self.meshState = MeshNetworkState();
+
         self.mesh = LoraMeshAdapter(self.messageBoard, self.meshState)
         self.view = WebClientView(self.messageBoard, self.meshState)
 

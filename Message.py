@@ -48,4 +48,4 @@ class Message:
         return message
 
     def isAccForMessage(self, message):
-        return self.content == message.content and self.target == message.target
+        return self.content == message.content and self.sender == message.target

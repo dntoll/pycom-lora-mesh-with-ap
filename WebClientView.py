@@ -30,7 +30,7 @@ class WebClientView:
 
                 mess = unquote(allThemParts.get("message"))
                 tar = unquote(allThemParts.get("target"))
-                message = Message(mess.decode(), tar.decode(), self.meshNetworkState.getIP(), 0, False, False)
+                message = Message(mess.decode(), tar.decode(), self.meshNetworkState.me.rloc16, 0, False, False)
                 self.messageBoard.sendMessage(message)
             if not line or strline == '\r\n':
                 break
