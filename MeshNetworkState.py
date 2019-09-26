@@ -1,12 +1,14 @@
 
 class NetworkNode:
-    def __init__(self, ip, mac, role, rloc16, rssi, age):
+    def __init__(self, ip, mac, role, rloc16, rssi, age, id, path_cost):
         self.ip = ip
         self.mac = mac
         self.role = role
         self.rloc16 = rloc16
         self.rssi = rssi
         self.age = age
+        self.id = id
+        self.path_cost = path_cost
 
     def setIP(self, newIP):
         self.ip = newIP
@@ -17,7 +19,7 @@ class MeshNetworkState:
 
 
     def __init__(self):
-        self.me = NetworkNode(0, 0, 0, 0, 0, 0)
+        self.me = NetworkNode(0, 0, 0, 0, 0, 0, 0, 0)
         self.neighbors = []
         self.routers = []
 
@@ -27,7 +29,7 @@ class MeshNetworkState:
         return self.routers
 
     def setSelfInfo(self, newIP, mac, role, rloc):
-        self.me = NetworkNode(newIP, mac, role, rloc, 0, 0)
+        self.me = NetworkNode(newIP, mac, role, rloc, 0, 0, 0, 0)
 
     def getIP(self):
         return self.me.getIP()
@@ -38,12 +40,12 @@ class MeshNetworkState:
 
         if neigbors is not None:
             for id, neigh in enumerate(neigbors):
-                nn = NetworkNode(neighbors_ip[id], neigh.mac, neigh.role, neigh.rloc16, neigh.rssi, neigh.age)
+                nn = NetworkNode(neighbors_ip[id], neigh.mac, neigh.role, neigh.rloc16, neigh.rssi, neigh.age, 0, 0)
                 self.neighbors.append(nn)
 
         if routers is not None:
             for r in routers:
-                nn = NetworkNode(0, r.mac, "?", r.rloc16, "?", r.age) #id=0, path_cost=0,
+                nn = NetworkNode(0, r.mac, 0, r.rloc16, 0, r.age, r.id, r.path_cost) #id=0, path_cost=0,
                 self.routers.append(nn)
         #print(neigbors); #[(mac=8121069065175678681, role=3, rloc16=7168, rssi=-26, age=30)]
         #print(neigbors_ips); #['fdde:ad00:beef:0:0:ff:fe00:1c00']

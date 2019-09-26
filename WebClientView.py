@@ -76,6 +76,8 @@ class WebClientView:
         html += "<dt>rloc16</dt><dd>" + str(node.rloc16) + "</dd>"
         html += "<dt>rssi</dt><dd>" + str(node.rssi) + "</dd>"
         html += "<dt>age</dt><dd>" + str(node.age) + "</dd>"
+        html += "<dt>id</dt><dd>" + str(node.id) + "</dd>"
+        html += "<dt>path_cost</dt><dd>" + str(node.path_cost) + "</dd>"
         html += "</dl>";
         return html;
 
