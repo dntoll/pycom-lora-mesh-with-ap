@@ -15,11 +15,13 @@ from network import LoRa
 from Message import Message
 
 import ubinascii
+import binascii
 import pycom
 import time
 import socket
 import machine
 import json
+from builtins import int
 
 
 def receive_pack(tuple):
@@ -27,7 +29,7 @@ def receive_pack(tuple):
     #print("receive_pack called")
     # listen for incomming packets
     for s in sockets:
-        rcv_data, rcv_addr = s.recvfrom(128)
+        rcv_data, rcv_addr = s.recvfrom(512)
         if len(rcv_data) == 0:
             break
         rcv_ip = rcv_addr[0]
@@ -38,11 +40,10 @@ def receive_pack(tuple):
         strData = rcv_data.decode();
         try:
             message = Message.fromString(strData)
-            print(message);
             messageBoard.receiveMessage(message)
         except Exception as e:
-            print("something went wrong in receive_pack" + repr(e) +" Data: "+ repr(strData))
-            pass
+            print("something went wrong in receive_pack " + repr(e) +" Data: "+ repr(strData) + " Len: " + str(len(strData)))
+            raise e
 
 
 class LoraMeshAdapter:
@@ -53,7 +54,9 @@ class LoraMeshAdapter:
         pycom.wifi_on_boot(False)
         pycom.heartbeat(False)
         self.lora = LoRa(mode=LoRa.LORA, region=LoRa.EU868, bandwidth=LoRa.BW_125KHZ, sf=7)
-        self.MAC = str(ubinascii.hexlify(self.lora.mac()))[2:-1]
+        mac = self.lora.mac();
+        self.MAC = str(int.from_bytes(mac, 'big')) #str(ubinascii.hexlify(self.lora.mac()))[2:-1]
+        print("MAC" + str(self.lora.mac()));
         self.mesh = Loramesh(self.lora)
         sockets = []
         self.s = socket.socket(socket.AF_LORA, socket.SOCK_RAW)
@@ -76,6 +79,8 @@ class LoraMeshAdapter:
         return self.mesh.neighbors_ip();
 
     def update(self):
+
+
         # check if topology changes, maybe RLOC IPv6 changed
         self.meshNetworkState.setSelfInfo(self.mesh.ip(), self.MAC, self.mesh.state, self.mesh.rloc);
 
@@ -99,7 +104,7 @@ class LoraMeshAdapter:
                 try:
                     theContent = message.toString();
                     self.s.sendto(theContent, (message.target, self.myport))
-                    print('Sent message to %s %s'%(message.target, repr(theContent)))
+                    print('Sent message to %s '%(message.target)) #, repr(theContent)))
                 except Exception as e:
                     print("something went wrong when sending message " + repr(e))
                     pass

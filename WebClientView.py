@@ -30,7 +30,7 @@ class WebClientView:
 
                 mess = unquote(allThemParts.get("message"))
                 tar = unquote(allThemParts.get("target"))
-                message = Message(mess.decode(), tar.decode(), self.meshNetworkState.me.rloc16, 0, False, False)
+                message = Message(mess.decode(), tar.decode(), self.meshNetworkState.me.rloc16, 0, False, False, False)
                 self.messageBoard.sendMessage(message)
             if not line or strline == '\r\n':
                 break
@@ -39,22 +39,38 @@ class WebClientView:
         ret = "<h2>Me</h2>"
         nodeHTML = self._getNodeHTML(self.meshNetworkState.me)
         ret += "<p>Me: " + nodeHTML + "</p>"
+        nodeHTML = self._getNodeDecorationHTML(self.meshNetworkState.selfDecoration)
+        ret += "<p>Me: " + nodeHTML + "</p>"
+
+
+
         ret += "<h2>Neighborhood</h2>"
         ret += "<table>"
-        #print(self.meshNetworkState.getNeighbors());
-        for neigh in self.meshNetworkState.getNeighbors():
+
+        for mac, neigh in self.meshNetworkState.getNeighbors().items():
             nodeHTML = self._getNodeHTML(neigh)
             ret += "<tr><td><a onclick='document.getElementById(\"idtarget\").value=\"" + str(neigh.getIP()) + "\"'>" + nodeHTML + "</a></td></tr>"
         ret += "</table>"
 
         ret += "<h2>Routers</h2>"
         ret += "<table>"
-        #print(self.meshNetworkState.getNeighbors());
-        for neigh in self.meshNetworkState.getRouters():
+
+        for mac, neigh in self.meshNetworkState.getRouters().items():
             nodeHTML = self._getNodeHTML(neigh)
             ret += "<tr><td><a onclick='document.getElementById(\"idtarget\").value=\"" + str(neigh.getIP()) + "\"'>" + nodeHTML + "</a></td></tr>"
         ret += "</table>"
+
+        ret += "<h2>Others</h2>"
+        ret += "<table>"
+
+        for mac, neigh in self.meshNetworkState.getOthers().items():
+            nodeHTML = self._getNodeDecorationHTML(neigh)
+            ret += "<tr><td><a onclick='document.getElementById(\"idtarget\").value=\"" + str(neigh.getIP()) + "\"'>" + nodeHTML + "</a></td></tr>"
+        ret += "</table>"
         return ret;
+
+
+
 
     def _translateRole(self, role):
         if role == 0:
@@ -67,6 +83,16 @@ class WebClientView:
             return "Router"
         else:
             return "Leader"
+
+    def _getNodeDecorationHTML(self, networkNodeDecoration):
+        html = "<dl>";
+        html += "<dt>Name:</dt><dd>" + str(networkNodeDecoration.name) + "</dd>"
+        html += "<dt>MAC</dt><dd>" + str(networkNodeDecoration.mac) + "</dd>"
+        html += "<dt>mlEID</dt><dd>" + str(networkNodeDecoration.mlEID) + "</dd>"
+        for client in networkNodeDecoration.clientsConnectedAtMySite:
+            html += "<dt>Client</dt><dd>" + str(client) + "</dd>"
+        html += "</dl>";
+        return html;
 
     def _getNodeHTML(self, node):
         html = "<dl>";
@@ -116,6 +142,6 @@ class WebClientView:
         messageHTML += "<td>From: " + str(message.getSender()) + "</td>"
         messageHTML += "<td>To: " + str(message.getTarget()) + "</td>"
         messageHTML += "<td>Content: " + str(message.getContent()) + "</td>"
-        messageHTML += "<td>" + message.toString() + "</td>"
+        messageHTML += "<td>" + str(message.toString()) + "</td>"
 
         return messageHTML

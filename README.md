@@ -1,7 +1,7 @@
 # pycom-lora-mesh-with-ap
 
 ## vision
-This project enables communication when there is no service, no internet, no power. Short messages are sent over a LoRa-Mesh network of cheap solar powered nodes that self-organise. Users connect to the closest node with their cellphone (Wifi-AP) and is able to send messages to users at other nodes. Messages are assynchronous.
+This project enables communication when there is no service, no internet, no power. Short messages are sent over a LoRa-Mesh network of cheap solar powered nodes that self-organise. Users connect to the closest node with their cellphone (WiFi-AP) and is able to send messages to users at other nodes. Messages are asynchronous.
 
 ## details
 Hardware: lopy4 with expansion boards and antennae. Solar panel with 5V converter
@@ -18,9 +18,9 @@ In the interface
  * on routers show id and jumps (from mesh.routers())
  * show firmware and code version (perhaps md5(all code files)?)
 
-Distribute all router ip-adresses and info about each router...
+Distribute all router IP-adresses and info about each router...
  * Set node name and attributes in interface (Eg. location, users etc)
- * Set masterkey and AP information in the intetface
+ * Set masterkey and AP information in the interface
  * save this?
  * Distribute this information to all nodes in mesh.
 

@@ -35,11 +35,17 @@ class WebServer:
             print('client connected from', addr)
             cl_file = cl.makefile()
             this.webClientView.handleRequest(cl_file, addr);
-
-            messageBoardHTML = this.webClientView.getFormHTML()
-            messageBoardHTML += this.webClientView.getMessagesHTML()
-            messageBoardHTML += this.webClientView.getNeighborsHTML()
-            response = htmlStart + messageBoardHTML + htmlEnd
-
-            cl.send(response)
-            cl.close()
+            response = "";
+            try:
+                messageBoardHTML = this.webClientView.getFormHTML()
+                messageBoardHTML += this.webClientView.getMessagesHTML()
+                messageBoardHTML += this.webClientView.getNeighborsHTML()
+                response = htmlStart + messageBoardHTML + htmlEnd
+                cl.send(response)
+                cl.close()
+            except Exception as e:
+                response = htmlStart + repr(e) + htmlEnd
+                cl.send(response)
+                cl.close()
+                print("something went wrong when sending message " + repr(e))
+                raise e

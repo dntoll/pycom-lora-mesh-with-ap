@@ -24,31 +24,41 @@ class MessageBoard:
 
     def receiveMessage(self, message):
         #we only care about our own messages
-        print(message.target)
-        print(self.meshState.me.rloc16)
-        if message.target == self.meshState.me.rloc16:
+        #print(message.target)
+        #print(self.meshState.me.rloc16)
+        if self.meshState.isDirectedToMe(message.target):
             if message.isACK:
-                newSendList = []
-                print("received acc on " + message.content)
-                #remove all that are not this message
-                for sent in self.toBeSent:
-                    if message.isAccForMessage(sent) == False:
-                        newSendList.append(sent)
-                    else:
-                        self.sent.append(sent)
-                        print("acc was recognized as for my sent message")
-                self.toBeSent = newSendList #remove from send list
+                self._receivedAccMessageForMe(message);
             else:
                 self.sendAcc(message)
                 self.received.append(message)
+        elif message.isBroadCast():
+            if message.isDecoration():
+                self.meshState.updateOthersDecorations(message)
+            else:
+                self.received.append(message)
+
+    def _receivedAccMessageForMe(self, message):
+        newSendList = []
+        for sent in self.toBeSent:
+            if message.isAccForMessage(sent) == False:
+                newSendList.append(sent)
+            else:
+                self.sent.append(sent)
+        self.toBeSent = newSendList #remove from send list
 
     #remove acc
     def sendCompleted(self):
         newSendList = []
 
         for sent in self.toBeSent:
-            if sent.isACK == False:
+            if sent.isACK == False and sent.isBroadCast() == False:
                 newSendList.append(sent)
+            else:
+                if sent.isDecoration():
+                    pass
+                else:
+                    self.sent.append(sent)
         self.toBeSent = newSendList
 
     def getReceivedMessages(self):
@@ -61,6 +71,6 @@ class MessageBoard:
         return self.sent
 
     def sendAcc(self, message):
-        accMessage = Message(message.content, message.sender, message.target, 0, True, False);
+        #note sender and target swapped places here...
+        accMessage = Message(message.content, message.sender, message.target, 0, True, False, False);
         self.sendMessage(accMessage)
-        print("sent acc on " + message.content)

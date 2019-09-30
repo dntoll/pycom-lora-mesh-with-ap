@@ -13,9 +13,10 @@ __version__ = '1'
 from WifiAP import WifiAP
 from WebServer import WebServer
 from LoraMeshAdapter import LoraMeshAdapter
-from MeshNetworkState import MeshNetworkState
+from MeshNetworkState import MeshNetworkState, NetworkNodeDecoration
 from MessageBoard import MessageBoard
 from WebClientView import WebClientView
+from Message import Message
 import time
 import machine
 
@@ -23,14 +24,18 @@ class LoraMeshChatApplication:
     """ Class for chatting over Lora """
 
     def __init__(self):
-        self.meshState = MeshNetworkState()
+        self.timeToSendSelfInfo = 0;
+        self.ap = WifiAP()
+
+        self.decoration = NetworkNodeDecoration(self.ap.ID, 0, 0, {})
+        self.meshState = MeshNetworkState(self.decoration)
         self.messageBoard = MessageBoard(self.meshState)
 
 
         self.mesh = LoraMeshAdapter(self.messageBoard, self.meshState)
         self.view = WebClientView(self.messageBoard, self.meshState)
 
-        self.ap = WifiAP()
+
         self.www = WebServer(self.view)
 
 
@@ -39,5 +44,11 @@ class LoraMeshChatApplication:
         # random sleep time
         #print("sleeping update")
         time.sleep(2)
+
+        self.timeToSendSelfInfo -= 2
+        if self.timeToSendSelfInfo <= 0:
+            self.timeToSendSelfInfo = 10;
+            self.messageBoard.sendMessage(Message(self.decoration.toString(), Message.TYPE_BROADCAST, self.meshState.getIP(), 0, False, False, True))
+
         #time.sleep(5)
         #self.www.handleAccept();
