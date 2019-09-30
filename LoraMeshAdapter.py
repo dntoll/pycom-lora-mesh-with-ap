@@ -56,8 +56,11 @@ class LoraMeshAdapter:
         self.lora = LoRa(mode=LoRa.LORA, region=LoRa.EU868, bandwidth=LoRa.BW_125KHZ, sf=7)
         mac = self.lora.mac();
         self.MAC = str(int.from_bytes(mac, 'big')) #str(ubinascii.hexlify(self.lora.mac()))[2:-1]
-        print("MAC" + str(self.lora.mac()));
+        #print("MAC" + str(self.MAC));
+        print("pre loramesh")
+        time.sleep(1)
         self.mesh = Loramesh(self.lora)
+        print("Lora mesh complete")
         sockets = []
         self.s = socket.socket(socket.AF_LORA, socket.SOCK_RAW)
         self.myport = 1234

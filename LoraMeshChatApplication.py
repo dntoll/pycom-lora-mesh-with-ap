@@ -47,7 +47,7 @@ class LoraMeshChatApplication:
 
         self.timeToSendSelfInfo -= 2
         if self.timeToSendSelfInfo <= 0:
-            self.timeToSendSelfInfo = 10;
+            self.timeToSendSelfInfo = 20;
             self.messageBoard.sendMessage(Message(self.decoration.toString(), Message.TYPE_BROADCAST, self.meshState.getIP(), 0, False, False, True))
 
         #time.sleep(5)

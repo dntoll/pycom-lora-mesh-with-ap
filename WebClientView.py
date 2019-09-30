@@ -36,41 +36,17 @@ class WebClientView:
                 break
 
     def getNeighborsHTML(self):
-        ret = "<h2>Me</h2>"
-        nodeHTML = self._getNodeHTML(self.meshNetworkState.me)
-        ret += "<p>Me: " + nodeHTML + "</p>"
-        nodeHTML = self._getNodeDecorationHTML(self.meshNetworkState.selfDecoration)
-        ret += "<p>Me: " + nodeHTML + "</p>"
+        ret = "<h2>Neighborhood</h2>"
 
-
-
-        ret += "<h2>Neighborhood</h2>"
         ret += "<table>"
+        ret += "<tr>" + self._getTitlesHTML() + "</tr>"
+        ret += "<tr>" + self._getCompleteNodeHTML(self.meshNetworkState.me.mac) + "</tr>"
 
-        for mac, neigh in self.meshNetworkState.getNeighbors().items():
-            nodeHTML = self._getNodeHTML(neigh)
-            ret += "<tr><td><a onclick='document.getElementById(\"idtarget\").value=\"" + str(neigh.getIP()) + "\"'>" + nodeHTML + "</a></td></tr>"
+        for mac in self.meshNetworkState.getAllNodesMacs():
+            ret += "<tr>" + self._getCompleteNodeHTML(mac) + "</tr>"
         ret += "</table>"
 
-        ret += "<h2>Routers</h2>"
-        ret += "<table>"
-
-        for mac, neigh in self.meshNetworkState.getRouters().items():
-            nodeHTML = self._getNodeHTML(neigh)
-            ret += "<tr><td><a onclick='document.getElementById(\"idtarget\").value=\"" + str(neigh.getIP()) + "\"'>" + nodeHTML + "</a></td></tr>"
-        ret += "</table>"
-
-        ret += "<h2>Others</h2>"
-        ret += "<table>"
-
-        for mac, neigh in self.meshNetworkState.getOthers().items():
-            nodeHTML = self._getNodeDecorationHTML(neigh)
-            ret += "<tr><td><a onclick='document.getElementById(\"idtarget\").value=\"" + str(neigh.getIP()) + "\"'>" + nodeHTML + "</a></td></tr>"
-        ret += "</table>"
         return ret;
-
-
-
 
     def _translateRole(self, role):
         if role == 0:
@@ -93,6 +69,72 @@ class WebClientView:
             html += "<dt>Client</dt><dd>" + str(client) + "</dd>"
         html += "</dl>";
         return html;
+
+    def _getCompleteNodeHTML(self, mac):
+        neighbors = self.meshNetworkState.getNeighbors()
+        others = self.meshNetworkState.getOthers();
+        routers = self.meshNetworkState.getRouters();
+
+
+        ip = -1;
+        name = "";
+        mlEID = -1
+        role = -1;
+        rssi = -1;
+        age = -1;
+        id = -1;
+        path_cost = -1;
+
+        if self.meshNetworkState.me.mac == str(mac):
+            ip = self.meshNetworkState.me.ip
+            role = self.meshNetworkState.me.role
+            ip = self.meshNetworkState.me.ip
+            name = self.meshNetworkState.selfDecoration.name
+            mlEID = self.meshNetworkState.selfDecoration.mlEID
+        else:
+            if mac in neighbors:
+                node = neighbors[mac]
+                ip = node.ip
+                role = node.role
+                rssi = node.rssi
+                age = node.age
+            if mac in others:
+                node = others[mac]
+                name = node.name
+                mlEID = node.mlEID
+            if mac in routers:
+                node = routers[mac]
+                age = node.age
+                id = node.id
+                path_cost = node.path_cost
+
+
+        row = ""
+        row += "<td>" + str(name) + "</td>"
+        row += "<td>" + str(mac) + "</td>"
+        row += "<td>" + str(ip) + "</td>"
+        #row += "<td>" + str(mlEID) + "</td>"
+
+        row += "<td><a onclick='document.getElementById(\"idtarget\").value=\"" + str(mlEID) + "\"'>" + str(mlEID) + "</a></td>"
+        row += "<td>" + self._translateRole(role) + "</td>"
+        row += "<td>" + str(rssi) + "</td>"
+        row += "<td>" + str(path_cost) + "</td>"
+        row += "<td>" + str(age) + "</td>"
+        row += "<td>" + str(id) + "</td>"
+        return row
+
+    def _getTitlesHTML(self):
+        row = ""
+        row += "<th>Name</th>"
+        row += "<th>Mac</th>"
+        row += "<th>IP</th>"
+        row += "<th>mlEID</th>"
+        row += "<th>Role</th>"
+        row += "<th>rssi</th>"
+        row += "<th>path_cost</th>"
+        row += "<th>age</th>"
+        row += "<th>id</th>"
+        return row
 
     def _getNodeHTML(self, node):
         html = "<dl>";
@@ -142,6 +184,6 @@ class WebClientView:
         messageHTML += "<td>From: " + str(message.getSender()) + "</td>"
         messageHTML += "<td>To: " + str(message.getTarget()) + "</td>"
         messageHTML += "<td>Content: " + str(message.getContent()) + "</td>"
-        messageHTML += "<td>" + str(message.toString()) + "</td>"
+
 
         return messageHTML
