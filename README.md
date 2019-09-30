@@ -27,6 +27,13 @@ Distribute all router IP-adresses and info about each router...
 Send to all
  * Broadcast messages
 
+Swap between AP, WiFi-Client, Router mode with button
+  * start in router mode (no-wifi)
+  * AP
+  * WiFi client but only if this is saved in AP settings
+
+
+
 ## Use cases
 
 ### send message to user at other node
