@@ -14,18 +14,12 @@ Run pycom-fwtool, select developer mode and firmware 1.20.0.rc11 (developer)
 
 ## Todo:
 
-In the interface
- * on routers show id and jumps (from mesh.routers())
- * show firmware and code version (perhaps md5(all code files)?)
-
 Distribute all router IP-adresses and info about each router...
  * Set node name and attributes in interface (Eg. location, users etc)
  * Set masterkey and AP information in the interface
  * save this?
  * Distribute this information to all nodes in mesh.
 
-Send to all
- * Broadcast messages
 
 Swap between AP, WiFi-Client, Router mode with button
   * start in router mode (no-wifi)
@@ -37,6 +31,8 @@ Swap between AP, WiFi-Client, Router mode with button
 ## Use cases
 
 ### send message to user at other node
+Send to all
+ * Broadcast messages
 
 ### receive message directed to me
 
@@ -45,6 +41,9 @@ Swap between AP, WiFi-Client, Router mode with button
 ### decorate node information with name and location
 
 ### show network structure
+In the interface
+ * on routers show id and jumps (from mesh.routers())
+ * show firmware and code version (perhaps md5(all code files)?)
 
 ## tests
 
