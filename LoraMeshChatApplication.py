@@ -17,6 +17,7 @@ from MeshNetworkState import MeshNetworkState
 from NetworkNodeDecoration import NetworkNodeDecoration
 from MessageBoard import MessageBoard
 from WebClientView import WebClientView
+from FirmwareHasher import FirmwareHasher
 from Message import Message
 import time
 import machine
@@ -28,7 +29,10 @@ class LoraMeshChatApplication:
         self.timeToSendSelfInfo = 10;
         self.ap = WifiAP()
 
-        self.decoration = NetworkNodeDecoration(self.ap.ID, 0, 0, {})
+        firmware = FirmwareHasher.calculate();
+        print("Code firmware: " + str(firmware))
+
+        self.decoration = NetworkNodeDecoration(self.ap.ID, -1, -1, firmware, {})
         self.meshState = MeshNetworkState(self.decoration)
         self.messageBoard = MessageBoard(self.meshState)
 

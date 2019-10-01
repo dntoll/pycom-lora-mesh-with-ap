@@ -85,6 +85,7 @@ class WebClientView:
         age = -1;
         id = -1;
         path_cost = -1;
+        firmware = "not set"
 
         if self.meshNetworkState.me.mac == str(mac):
             ip = self.meshNetworkState.me.ip
@@ -92,6 +93,7 @@ class WebClientView:
             ip = self.meshNetworkState.me.ip
             name = self.meshNetworkState.selfDecoration.name
             mlEID = self.meshNetworkState.selfDecoration.mlEID
+            firmware = self.meshNetworkState.selfDecoration.firmware
         else:
             if mac in neighbors:
                 node = neighbors[mac]
@@ -103,6 +105,7 @@ class WebClientView:
                 node = others[mac]
                 name = node.name
                 mlEID = node.mlEID
+                firmware = node.firmware
             if mac in routers:
                 node = routers[mac]
                 age = node.age
@@ -112,6 +115,7 @@ class WebClientView:
 
         row = ""
         row += "<td>" + str(name) + "</td>"
+        row += "<td>" + str(firmware) + "</td>"
         row += "<td>" + str(mac) + "</td>"
         row += "<td>" + str(ip) + "</td>"
         #row += "<td>" + str(mlEID) + "</td>"
@@ -127,6 +131,7 @@ class WebClientView:
     def _getTitlesHTML(self):
         row = ""
         row += "<th>Name</th>"
+        row += "<th>Code Version</th>"
         row += "<th>Mac</th>"
         row += "<th>IP</th>"
         row += "<th>mlEID</th>"
