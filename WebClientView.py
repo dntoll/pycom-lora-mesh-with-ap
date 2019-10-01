@@ -157,11 +157,7 @@ class WebClientView:
         return html;
     '''
     def getFormHTML(self):
-        return """<form method="get">
-            Message:<input type='text' name='message'><br/>
-            Target :<input type='text' name='target' id='idtarget'>
-            <input type="submit" value="Submit">
-        </form>"""
+        return """"""
 
     def getMessagesHTML(self):
 

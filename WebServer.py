@@ -16,11 +16,38 @@ class WebServer:
         print("started webserver");
 
     def handleAccept(s, this):
+
+        #perhaps read and include all files from www/include?
+        f = open("www/cryptico.min.js", 'r')
+        javascriptContents = f.read()
+        f.close();
+
+        f = open("www/clientsideapp.js", 'r')
+        javascriptContents += "\n" + f.read()
+        f.close();
+
+        f = open("www/style.css", 'r')
+        cssStyleContents = f.read()
+        f.close();
+
+        f = open("www/body.html", 'r')
+        htmlBodyTop = f.read()
+        f.close();
+
+
+
         htmlStart = """<!DOCTYPE html>
         <html>
-            <head> <title>ESP8266 Pins</title> </head>
-            <body>
+            <head> <title>Pycom loramesh</title> </head>
+            <script type=\"text/javascript\">
+                """ + javascriptContents + """
+            </script>
+            <style>
+                """ + cssStyleContents + """
+            </style>
 
+            <body>
+                """ + htmlBodyTop + """
                 <h1>Message Log</h1>
                 <a href="http://192.168.1.1">reload</a>
                 """
