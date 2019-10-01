@@ -71,8 +71,9 @@ class WebServer:
                 cl.send(response)
                 cl.close()
             except Exception as e:
-                response = htmlStart + repr(e) + htmlEnd
-                cl.send(response)
-                cl.close()
-                print("something went wrong when sending message " + repr(e))
-                raise e
+                try:
+                    response = htmlStart + repr(e) + htmlEnd
+                    cl.send(response)
+                    cl.close()
+                except Exception as e:
+                    print("something went wrong when sending message " + repr(e))
