@@ -41,6 +41,7 @@ class WebClientView:
         ret += "<table>"
         ret += "<tr>" + self._getTitlesHTML() + "</tr>"
         ret += "<tr>" + self._getCompleteNodeHTML(self.meshNetworkState.me.mac) + "</tr>"
+        ret += "<tr>" + self._getTitlesHTML() + "</tr>"
 
         for mac in self.meshNetworkState.getAllNodesMacs():
             ret += "<tr>" + self._getCompleteNodeHTML(mac) + "</tr>"
@@ -136,6 +137,7 @@ class WebClientView:
         row += "<th>id</th>"
         return row
 
+    '''
     def _getNodeHTML(self, node):
         html = "<dl>";
         html += "<dt>IP</dt><dd>" + str(node.ip) + "</dd>"
@@ -148,7 +150,7 @@ class WebClientView:
         html += "<dt>path_cost</dt><dd>" + str(node.path_cost) + "</dd>"
         html += "</dl>";
         return html;
-
+    '''
     def getFormHTML(self):
         return """<form method="get">
             Message:<input type='text' name='message'><br/>

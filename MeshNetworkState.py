@@ -1,50 +1,8 @@
 
-#This encapsulates the information we can get through the interfaces of loramesh
-class NetworkNode:
-    def __init__(self, ip, mac, role, rloc16, rssi, age, id, path_cost):
-        self.ip = ip
-        self.mac = mac
-        self.role = role
-        self.rloc16 = rloc16
-        self.rssi = rssi
-        self.age = age
-        self.id = id
-        self.path_cost = path_cost
 
-    def setIP(self, newIP):
-        self.ip = newIP
-    def getIP(self):
-        return self.ip
 
-import json
-import ubinascii
-
-#This encapsulates the information we want to sent to others
-class NetworkNodeDecoration:
-    def __init__(self, name, mac, mlEID, clientsConnectedAtMySite):
-        self.name = name
-        self.mlEID = mlEID
-        self.mac = mac
-        self.clientsConnectedAtMySite = clientsConnectedAtMySite
-
-    def getIP(self):
-        return self.mlEID
-
-    def toString(self):
-        tuple = [self.name, self.mac, self.mlEID, self.clientsConnectedAtMySite]
-        return ubinascii.b2a_base64(json.dumps(tuple))
-
-    def fromString(strData):
-
-        rawText = ubinascii.a2b_base64(strData)
-        tuple = json.loads(rawText);
-
-        name, mac, mlEID, clientsConnectedAtMySite = tuple
-
-        decoration = NetworkNodeDecoration(name, mac, mlEID, clientsConnectedAtMySite)
-
-        return decoration
-
+from NetworkNode import NetworkNode
+from NetworkNodeDecoration import NetworkNodeDecoration
 
 class MeshNetworkState:
 
@@ -66,6 +24,12 @@ class MeshNetworkState:
 
     def getAllNodesMacs(self):
         allNodes = set(self.others.keys()) | set(self.routers.keys()) | set(self.neighbors.keys())
+
+        #remove self
+        if self.selfDecoration.mac in allNodes:
+            allNodes.remove(self.selfDecoration.mac)
+
+        #remove the 0 node added into routers?
         if 0 in allNodes:
             allNodes.remove(0)
         if "0" in allNodes:
