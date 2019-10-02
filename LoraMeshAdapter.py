@@ -44,7 +44,7 @@ def receive_pack(tuple):
             print("Received message from " + str(message.getSender()))
         except Exception as e:
             print("something went wrong in receive_pack " + repr(e) +" Data: "+ repr(strData) + " Len: " + str(len(strData)))
-            raise e
+            #raise e
 
 
 class LoraMeshAdapter:
@@ -59,7 +59,6 @@ class LoraMeshAdapter:
         self.MAC = str(int.from_bytes(mac, 'big')) #str(ubinascii.hexlify(self.lora.mac()))[2:-1]
         #print("MAC" + str(self.MAC));
         print("pre loramesh")
-        time.sleep(1)
         self.mesh = Loramesh(self.lora)
         print("Lora mesh complete")
         sockets = []
@@ -72,10 +71,6 @@ class LoraMeshAdapter:
 
         self.meshNetworkState.setSelfInfo(self.mesh.ip(), self.MAC, self.mesh.state, self.mesh.rloc);
 
-
-        #print("self.ip")
-        #print(self.ip)
-
     def getIP(self):
         return self.mesh.ip();
 
@@ -83,25 +78,16 @@ class LoraMeshAdapter:
         return self.mesh.neighbors_ip();
 
     def update(self):
-
-
         # check if topology changes, maybe RLOC IPv6 changed
         self.meshNetworkState.setSelfInfo(self.mesh.ip(), self.MAC, self.mesh.state, self.mesh.rloc);
 
+        self.mesh.led_state()
         if not self.mesh.is_connected():
-            self.mesh.led_state()
             print("%d: State %s, single %s"%(time.time(), self.mesh.cli('state'), self.mesh.cli('singleton')))
         else:
             self.meshNetworkState.setNeighbors(self.mesh.neighbors(), self.mesh.neighbors_ip(), self.mesh.mesh.routers(), self.mesh.mesh.ipaddr())
-
-            self.mesh.led_state()
-            #print("%d: State %s, single %s"%(time.time(), self.mesh.cli('state'), self.mesh.cli('singleton')))
-
-            # update neighbors list
             neigbors = self.mesh.neighbors_ip()
             print("%d neighbors, IPv6 list: %s"%(len(neigbors), neigbors))
-
-            # send PING and UDP packets to all neighbors
 
             for message in self.messageBoard.getMessagesToBeSent():
                 message.doSend();

@@ -17,9 +17,11 @@ import ubinascii
 
 class WifiAP:
     def __init__(self):
+
         self.ID = str(ubinascii.hexlify(machine.unique_id()))[2:-1]
-        '''        print("My ssid:")
+        print("My ssid:")
         print(self.ID);
+        '''
         self.wlan = WLAN(mode=WLAN.AP, ssid=self.ID, auth=(WLAN.WPA2, 'Own password'), channel=11, antenna=WLAN.INT_ANT)
         self.wlan.ifconfig(id=1, config=('192.168.1.1', '255.255.255.0', '192.168.1.1', '8.8.8.8'))
         print("done configuring");

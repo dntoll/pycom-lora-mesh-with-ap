@@ -1,6 +1,6 @@
 from Message import Message
 from unquote import unquote
-
+from HTTPGet import HTTPGet
 
 class WebClientView:
 
@@ -11,29 +11,19 @@ class WebClientView:
 
 
     def handleRequest(self, cl_file, addr):
+        httpget = HTTPGet()
+
         while True:
             line = cl_file.readline()
             strline = line.decode();
-            if strline.startswith("GET /?"):
-                messageEnd = strline.find(" HTTP/1.1")
-                allGetStuff = strline[6:messageEnd]; #skip GET /?
-                parts = allGetStuff.split("&")
-
-                allThemParts = {}
-                for getVariable in parts:
-                    firstAndSecond = getVariable.split("=");
-                    name = firstAndSecond[0]
-                    value = firstAndSecond[1]
-                    allThemParts.update( {name : value } )
-
-                print(allThemParts)
-
-                mess = unquote(allThemParts.get("message"))
-                tar = unquote(allThemParts.get("target"))
-                message = Message(mess.decode(), tar.decode(), self.meshNetworkState.me.rloc16, 0, False, False, False)
-                self.messageBoard.sendMessage(message)
+            httpget.addLine(strline);
             if not line or strline == '\r\n':
                 break
+        if (httpget.has("message") and httpget.has("target")):
+            mess = httpget.get("message")
+            tar = httpget.get("target")
+            message = Message(mess, tar, self.meshNetworkState.me.rloc16, 0, False, False, False)
+            self.messageBoard.sendMessage(message)
 
     def getNeighborsHTML(self):
         ret = "<h2>Neighborhood</h2>"
@@ -142,22 +132,6 @@ class WebClientView:
         row += "<th>id</th>"
         return row
 
-    '''
-    def _getNodeHTML(self, node):
-        html = "<dl>";
-        html += "<dt>IP</dt><dd>" + str(node.ip) + "</dd>"
-        html += "<dt>MAC</dt><dd>" + str(node.mac) + "</dd>"
-        html += "<dt>role</dt><dd>" + self._translateRole(node.role) + "</dd>"
-        html += "<dt>rloc16</dt><dd>" + str(node.rloc16) + "</dd>"
-        html += "<dt>rssi</dt><dd>" + str(node.rssi) + "</dd>"
-        html += "<dt>age</dt><dd>" + str(node.age) + "</dd>"
-        html += "<dt>id</dt><dd>" + str(node.id) + "</dd>"
-        html += "<dt>path_cost</dt><dd>" + str(node.path_cost) + "</dd>"
-        html += "</dl>";
-        return html;
-    '''
-    def getFormHTML(self):
-        return """"""
 
     def getMessagesHTML(self):
 
@@ -167,8 +141,7 @@ class WebClientView:
             messageBoardHTML += "<tr>" + self._getMessageHTML(message) + " </tr>"
         messageBoardHTML +=  "</table>"
 
-
-        messageBoardHTML += "<h2>To be sent Messages</h2>"
+        messageBoardHTML += "<h2>Send Que</h2>"
         messageBoardHTML += "<table>"
         for message in self.messageBoard.getMessagesToBeSent():
             messageBoardHTML += "<tr>" + self._getMessageHTML(message) + " </tr>"

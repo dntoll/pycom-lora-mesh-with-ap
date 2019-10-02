@@ -7,6 +7,11 @@ function storePersonalInformation(){
     var inputElement= document.getElementById(variable);
     localStorage.setItem(variable, inputElement.value);
   }
+
+  let passfrase = localStorage.getItem("passfraseID");
+  var Bits = 1024;
+
+  var myRSAKey = cryptico.generateRSAKey(let, Bits);
 };
 
 window.onload = function() {
@@ -33,7 +38,7 @@ window.onload = function() {
 //sök efter användare
 // The passphrase used to repeatably generate this RSA key.
 //alert("http://wwwtyro.github.io/cryptico/");
-var Bits = 1024;
+/*
 var PassPhrase1 = "The Moon is a Harsh Mistress.";
 var PassPhrase2 = "There Ain't No Such Thing As A Free Lunch.";
 // The length of the RSA key, in bits.
@@ -51,6 +56,6 @@ var DecryptionResult = cryptico.decrypt(EncryptionResult.cipher, MattsRSAkey);
 
 
 //Signing by Sams key!
-var EncryptionResult = cryptico.encrypt(PlainText, MattsPublicKeyString, SamsRSAkey);
+var EncryptionResult = cryptico.encrypt(PlainText, MattsPublicKeyString, SamsRSAkey);*/
 //Not working
 //var PublicKeyID = cryptico.publicKeyID(EncryptionResult.publickey);

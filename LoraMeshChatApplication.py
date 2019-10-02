@@ -35,12 +35,8 @@ class LoraMeshChatApplication:
         self.decoration = NetworkNodeDecoration(self.ap.ID, -1, -1, firmware, {})
         self.meshState = MeshNetworkState(self.decoration)
         self.messageBoard = MessageBoard(self.meshState)
-
-
         self.mesh = LoraMeshAdapter(self.messageBoard, self.meshState)
         self.view = WebClientView(self.messageBoard, self.meshState)
-
-
         self.www = WebServer(self.view)
 
 
@@ -54,6 +50,3 @@ class LoraMeshChatApplication:
         if self.timeToSendSelfInfo <= 0:
             self.timeToSendSelfInfo = 40;
             self.messageBoard.sendMessage(Message(self.decoration.toString(), Message.TYPE_BROADCAST, self.meshState.getIP(), 0, False, False, True))
-
-        #time.sleep(5)
-        #self.www.handleAccept();

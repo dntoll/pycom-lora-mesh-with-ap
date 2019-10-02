@@ -64,8 +64,7 @@ class WebServer:
             this.webClientView.handleRequest(cl_file, addr);
             response = "";
             try:
-                messageBoardHTML = this.webClientView.getFormHTML()
-                messageBoardHTML += this.webClientView.getMessagesHTML()
+                messageBoardHTML = this.webClientView.getMessagesHTML()
                 messageBoardHTML += this.webClientView.getNeighborsHTML()
                 response = htmlStart + messageBoardHTML + htmlEnd
                 cl.send(response)
@@ -77,3 +76,4 @@ class WebServer:
                     cl.close()
                 except Exception as e:
                     print("something went wrong when sending message " + repr(e))
+                #raise e

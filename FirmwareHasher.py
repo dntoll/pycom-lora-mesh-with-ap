@@ -17,4 +17,4 @@ class FirmwareHasher:
                 hasher.update(contents);
                 f.close()
 
-        return ubinascii.hexlify(hasher.digest())
+        return ubinascii.hexlify(hasher.digest()).decode()[1:8]
