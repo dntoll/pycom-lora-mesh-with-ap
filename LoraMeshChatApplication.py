@@ -40,7 +40,7 @@ class LoraMeshChatApplication:
         firmware = FirmwareHasher.calculate();
         print("Code firmware: " + str(firmware))
 
-        self.decoration = NetworkNodeDecoration(self.ap.ID, -1, -1, firmware, {})
+        self.decoration = NetworkNodeDecoration(self.ap.ID, -1, -1, firmware, [])
         self.meshState = MeshNetworkState(self.decoration)
         self.messageBoard = MessageBoard(self.meshState)
         self.mesh = LoraMeshAdapter(self.messageBoard, self.meshState)

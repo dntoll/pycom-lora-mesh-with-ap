@@ -41,6 +41,9 @@ class MeshNetworkState:
         self.selfDecoration.mlEID = newIP
         self.selfDecoration.mac = mac
 
+    def setClient(self, client):
+        self.selfDecoration.clientsConnectedAtMySite.append(client)
+
     def getIP(self):
         return self.me.getIP()
     def isDirectedToMe(self, targetAddress):

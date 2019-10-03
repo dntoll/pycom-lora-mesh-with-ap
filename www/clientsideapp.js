@@ -1,7 +1,7 @@
 
 
 var inputElements = ["phoneID", "nameID", "passfraseID"];
-var rsakey = "";
+var myRSAKey = "";
 
 function storePersonalInformation(){
   for (const variable of inputElements) {
@@ -13,8 +13,20 @@ function storePersonalInformation(){
   let passfrase = localStorage.getItem("passfraseID");
   var Bits = 1024;
 
-  rsakey = cryptico.generateRSAKey(passfrase, Bits);
+  myRSAKey = cryptico.generateRSAKey(passfrase, Bits);
   localStorage.setItem(myRSAKey, "RSAKey");
+
+  var d = new Date();
+  let time = d.getTime();
+  let phoneNumber= document.getElementById("phoneID").value;
+  let name       = document.getElementById("nameID").value;
+  let publickey = cryptico.publicKeyString(myRSAKey);
+
+  $.ajax({
+	  url:  "?phoneNumber=" + phoneNumber + "&name=" + name + "&time="+ time + "&publickey="+ publickey,
+	  context: document.body,
+	   error: onError
+	}).done(onUploadedClient);
 };
 
 function loadPersonalInformation() {
@@ -23,7 +35,7 @@ function loadPersonalInformation() {
     inputElement.value = localStorage.getItem(variable);
   }
 
-  rsakey = localStorage.getItem("RSAKey");
+  myRSAKey = localStorage.getItem("RSAKey");
 }
 
 
@@ -86,6 +98,10 @@ function onUploadedMessages(something) {
   var messageElement= document.getElementById("messageID");
   messageElement.value = "";
   onDownloadedMessages(something)
+}
+
+function onUploadedClient(something) {
+
 }
 
 //API Calls

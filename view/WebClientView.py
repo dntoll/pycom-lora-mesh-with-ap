@@ -1,4 +1,5 @@
 from model.Message import Message
+from model.Client import Client
 from unquote import unquote
 from view.HTTPGet import HTTPGet
 
@@ -21,6 +22,8 @@ class WebClientView:
             self.httpget.addLine(strline);
             if not line or strline == '\r\n':
                 break
+    def userAddsClient(self):
+        return self.httpget.has("phoneNumber") and self.httpget.has("name") and self.httpget.has("time") and self.httpget.has("publickey")
 
     def userSendsMessage(self):
         return self.httpget.has("message") and self.httpget.has("target") and self.httpget.has("time")
@@ -31,13 +34,20 @@ class WebClientView:
     def userPollsNetwork(self):
         return self.httpget.has("network")
 
+    def getClient(self):
+        phoneNumber = self.httpget.get("phoneNumber")
+        name = self.httpget.get("name")
+        time = self.httpget.get("time")
+        publicKeyString = self.httpget.get("publickey")
+        return Client(phoneNumber, name, publicKeyString, time)
+
     def getMessage(self):
         mess = self.httpget.get("message")
         tar = self.httpget.get("target")
         time = self.httpget.get("time")
         return Message(mess, tar, self.meshNetworkState.me.rloc16, time, 0, False, False, False)
 
-    def getIndexResponse(self, connection):
+    def sendIndexPageHTML(self, connection):
         #perhaps read and include all files from www/include?
 
         connection.send("""<!DOCTYPE html>
@@ -55,12 +65,23 @@ class WebClientView:
         connection.send("</style> <body>");
         self.sendFile("www/body.html", connection)
         connection.send("</body></html>")
+
     def sendFile(self, filename, connection):
         f = open(filename, 'r')
         connection.send(f.read())
         f.close();
 
-    def getNeighborsHTML(self, connection):
+
+    def sendMessagesJSON(self, connection):
+        dict = {
+            "Received" : self.messageBoard.getReceivedMessagesList(),
+            "To be sent" : self.messageBoard.getMessagesToBeSentList(),
+            "Sent" : self.messageBoard.getMessagesSentList()
+        }
+        ret = ujson.dumps(dict)
+        connection.send(ret)
+
+    def sendNeigborsJSON(self, connection):
         ret = "<h2>Neighborhood</h2>"
 
         ret += "<table>"
@@ -97,20 +118,23 @@ class WebClientView:
         return html;
 
     def _getCompleteNodeHTML(self, mac):
+
+        #TODO: Divide into two method of which one is meshNetworkState and returns this complete information about a node...
         neighbors = self.meshNetworkState.getNeighbors()
         others = self.meshNetworkState.getOthers();
         routers = self.meshNetworkState.getRouters();
 
 
-        ip = -1;
-        name = "";
-        mlEID = -1
-        role = -1;
-        rssi = -1;
-        age = -1;
-        id = -1;
-        path_cost = -1;
+        ip = "no info"
+        name = "no info"
+        mlEID = "no info"
+        role = "no info"
+        rssi = "no info"
+        age = "no info"
+        id = "no info"
+        path_cost = "no info"
         firmware = "not set"
+        clients = []
 
         if self.meshNetworkState.me.mac == str(mac):
             ip = self.meshNetworkState.me.ip
@@ -119,6 +143,7 @@ class WebClientView:
             name = self.meshNetworkState.selfDecoration.name
             mlEID = self.meshNetworkState.selfDecoration.mlEID
             firmware = self.meshNetworkState.selfDecoration.firmware
+            clients = self.meshNetworkState.selfDecoration.clientsConnectedAtMySite
         else:
             if mac in neighbors:
                 node = neighbors[mac]
@@ -131,6 +156,7 @@ class WebClientView:
                 name = node.name
                 mlEID = node.mlEID
                 firmware = node.firmware
+                clients = node.clientsConnectedAtMySite
             if mac in routers:
                 node = routers[mac]
                 age = node.age
@@ -151,6 +177,15 @@ class WebClientView:
         row += "<td>" + str(path_cost) + "</td>"
         row += "<td>" + str(age) + "</td>"
         row += "<td>" + str(id) + "</td>"
+
+        html = "<dl>";
+        for client in clients:
+            html += "<dt>phoneNumber</dt><dd>" + str(client.phoneNumber) + "</dd>"
+            html += "<dt>name</dt><dd>" + str(client.name) + "</dd>"
+            html += "<dt>publicKeyString</dt><dd>" + str(client.publicKeyString) + "</dd>"
+            html += "<dt>time</dt><dd>" + str(client.time) + "</dd>"
+        html += "</dl>"
+        row += "<td>" + html + "</td>"
         return row
 
     def _getTitlesHTML(self):
@@ -165,14 +200,5 @@ class WebClientView:
         row += "<th>path_cost</th>"
         row += "<th>age</th>"
         row += "<th>id</th>"
+        row += "<th>clients</th>"
         return row
-
-
-    def getMessagesJSON(self, connection):
-        dict = {
-            "Received" : self.messageBoard.getReceivedMessagesList(),
-            "To be sent" : self.messageBoard.getMessagesToBeSentList(),
-            "Sent" : self.messageBoard.getMessagesSentList()
-        }
-        ret = ujson.dumps(dict)
-        connection.send(ret)

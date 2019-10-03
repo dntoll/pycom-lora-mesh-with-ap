@@ -15,10 +15,17 @@ class WebClientController:
         if self.view.userSendsMessage():
             message = self.view.getMessage()
             self.messageBoard.sendMessage(message)
-            self.view.getMessagesJSON(connection)
+            self.view.sendMessagesJSON(connection)
+
         elif self.view.userPollsMessages():
-            self.view.getMessagesJSON(connection)
+            self.view.sendMessagesJSON(connection)
+
+        elif self.view.userAddsClient():
+            client = self.view.getClient();
+            self.meshNetworkState.setClient(client)
+            #self.view.sendClientsJSON(connection)
+
         elif self.view.userPollsNetwork():
-            self.view.getNeighborsHTML(connection)
+            self.view.sendNeigborsJSON(connection)
         else:
-            self.view.getIndexResponse(connection)
+            self.view.sendIndexPageHTML(connection)
