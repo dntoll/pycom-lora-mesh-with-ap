@@ -2,6 +2,8 @@ from model.Message import Message
 from unquote import unquote
 from view.HTTPGet import HTTPGet
 
+import ujson
+
 class WebClientView:
 
 
@@ -65,7 +67,7 @@ class WebClientView:
             <script t language=\"JavaScript\" type=\"text/javascript\" >
                 """ + jQuery + """
             </script>
-            
+
             <script t language=\"JavaScript\" type=\"text/javascript\" >
                 """ + javascriptContents + """
             </script>
@@ -166,7 +168,7 @@ class WebClientView:
         row += "<td>" + str(ip) + "</td>"
         #row += "<td>" + str(mlEID) + "</td>"
 
-        row += "<td><a onclick='document.getElementById(\"idtarget\").value=\"" + str(mlEID) + "\"'>" + str(mlEID) + "</a></td>"
+        row += "<td><a onclick='document.getElementById(\"targetID\").value=\"" + str(mlEID) + "\"'>" + str(mlEID) + "</a></td>"
         row += "<td>" + self._translateRole(role) + "</td>"
         row += "<td>" + str(rssi) + "</td>"
         row += "<td>" + str(path_cost) + "</td>"
@@ -190,6 +192,13 @@ class WebClientView:
 
 
     def getMessagesHTML(self):
+        dict = {
+            "Received" : self.messageBoard.getReceivedMessagesList(),
+            "To be sent" : self.messageBoard.getMessagesToBeSentList(),
+            "Sent" : self.messageBoard.getMessagesSentList()
+        }
+        return ujson.dumps(dict)
+        '''
         messageBoardHTML = "<h2>Received Messages</h2>"
         messageBoardHTML += "<table>"
         for message in self.messageBoard.getReceivedMessages():
@@ -209,6 +218,7 @@ class WebClientView:
         messageBoardHTML = messageBoardHTML + "</table>"
 
         return messageBoardHTML;
+        '''
 
     def _getMessageHTML(self, message):
         messageHTML = ""

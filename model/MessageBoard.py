@@ -68,6 +68,24 @@ class MessageBoard:
     def getMessagesSent(self):
         return self.sent
 
+    def getReceivedMessagesList(self):
+        ret = []
+        for message in self.received:
+            ret.append(message.toDictionary())
+        return ret
+
+    def getMessagesToBeSentList(self):
+        ret = []
+        for message in self.toBeSent:
+            ret.append(message.toDictionary())
+        return ret
+
+    def getMessagesSentList(self):
+        ret = []
+        for message in self.sent:
+            ret.append(message.toDictionary())
+        return ret
+
     def sendAcc(self, message):
         #note sender and target swapped places here...
         accMessage = Message(message.content, message.sender, message.target, 0, True, False, False);

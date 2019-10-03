@@ -1,37 +1,44 @@
 
 
-function storePersonalInformation(){
-  var inputElements = ["phoneID", "nameID", "passfraseID"];
+var inputElements = ["phoneID", "nameID", "passfraseID"];
+var rsakey = "";
 
+function storePersonalInformation(){
   for (const variable of inputElements) {
     var inputElement= document.getElementById(variable);
     localStorage.setItem(variable, inputElement.value);
   }
 
+  //Generate new RSAKey
   let passfrase = localStorage.getItem("passfraseID");
   var Bits = 1024;
 
-  var myRSAKey = cryptico.generateRSAKey(let, Bits);
+  rsakey = cryptico.generateRSAKey(passfrase, Bits);
+  localStorage.setItem(myRSAKey, "RSAKey");
 };
 
 function loadPersonalInformation() {
-  var inputElements = ["phoneID", "nameID", "passfraseID"];
-
   for (const variable of inputElements) {
     var inputElement= document.getElementById(variable);
     inputElement.value = localStorage.getItem(variable);
   }
+
+  rsakey = localStorage.getItem("RSAKey");
 }
 
 
-
+//AJAX COMPLETED EVENT LISTENERS
 function onError(xhr, ajaxOptions, thrownError) {
 		console.log("onError", xhr, ajaxOptions, thrownError);
 }
 
 function onDownloadedMessages(something) {
   var messagesDiv= document.getElementById("messages");
-  messagesDiv.innerHTML = something
+
+
+  var obj = JSON.parse(something);
+
+  console.log(obj)
 }
 
 function onDownloadedNetwork(something) {
@@ -42,8 +49,10 @@ function onDownloadedNetwork(something) {
 function onUploadedMessages(something) {
   var messageElement= document.getElementById("messageID");
   messageElement.value = "";
+  updateMessages()
 }
 
+//API Calls
 function userSendsMessage() {
   var targetElement= document.getElementById("targetID");
   var messageElement= document.getElementById("messageID");
@@ -55,7 +64,7 @@ function userSendsMessage() {
 	  url:  "?message=" + message + "&target=" + target,
 	  context: document.body,
 	   error: onError
-	}).done(updateMessages);
+	}).done(onUploadedMessages);
 }
 
 function updateMessages() {
@@ -75,17 +84,18 @@ function updateNetwork() {
 }
 
 
+//INITIATE APPLICATION
+window.setInterval(function(){
+  updateMessages();
+}, 5000);
 
 window.setInterval(function(){
   updateNetwork();
-  updateMessages();
-}, 5000);
+}, 10000);
 
 window.onload = function() {
   loadPersonalInformation();
 };
-
-//Om ansluten: Ladda om sidan då och då eller iaf hämta ny information typ var 10 sekund
 
 //interface för din egen session men som lagras på klienten
 //användarnamn som är sökbart, ex telefonnummer och namn

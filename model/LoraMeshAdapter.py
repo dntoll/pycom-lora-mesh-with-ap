@@ -25,6 +25,7 @@ from builtins import int
 
 
 def receive_pack(tuple):
+    print("receive_pack:" + repr(tuple))
     sockets, messageBoard = tuple
     #print("receive_pack called")
     # listen for incomming packets
@@ -34,8 +35,6 @@ def receive_pack(tuple):
             break
         rcv_ip = rcv_addr[0]
         rcv_port = rcv_addr[1]
-    #    print('Incomming %d bytes from %s (port %d)'%(len(rcv_data), rcv_ip, rcv_port))
-    #    print(rcv_data)
 
         strData = rcv_data.decode();
         try:

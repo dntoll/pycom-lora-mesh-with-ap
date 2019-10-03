@@ -46,6 +46,14 @@ class Message:
     def toString(self):
         tuple = [self.content, self.target, self.sender, self.sendCount, self.isACK, self.hasBeenAcced, self.isSelfInformation]
         return ubinascii.b2a_base64(json.dumps(tuple))
+        
+    def toDictionary(self):
+        dict = {
+            "Content" : self.content,
+            "Target" : self.target,
+            "Sender" : self.sender
+        }
+        return dict
 
     def fromString(strData):
 
