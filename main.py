@@ -8,7 +8,10 @@
 # available at https://www.pycom.io/opensource/licensing
 #
 from LoraMeshChatApplication import LoraMeshChatApplication
-import sys
+import pycom
+
+pycom.wifi_on_boot(False)
+pycom.heartbeat(False)
 
 app = LoraMeshChatApplication()
 print("init done");

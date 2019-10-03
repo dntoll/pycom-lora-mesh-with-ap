@@ -21,19 +21,23 @@ class WifiAP:
         self.ID = str(ubinascii.hexlify(machine.unique_id()))[2:-1]
         print("My ssid:")
         print(self.ID);
-        '''
-        self.wlan = WLAN(mode=WLAN.AP, ssid=self.ID, auth=(WLAN.WPA2, 'Own password'), channel=11, antenna=WLAN.INT_ANT)
-        self.wlan.ifconfig(id=1, config=('192.168.1.1', '255.255.255.0', '192.168.1.1', '8.8.8.8'))
-        print("done configuring");
-        '''
-        wlan = WLAN()
-        wlan.init(mode=WLAN.STA)
+
+        self.wlan = WLAN()
+        self.wlan.init(mode=WLAN.STA)
         nets = wlan.scan()
+        found = False
         for net in nets:
             if net.ssid == 'Minecraft':
+                found = True
                 print('Network found!')
                 wlan.connect(net.ssid, auth=(net.sec, 'GudmundsV4genIsTheBest'), timeout=5000)
                 while not wlan.isconnected():
                     machine.idle() # save power while waiting
                     print('WLAN connection succeeded!')
                     break
+
+        if found is False:
+            self.wlan.deinit()
+            self.wlan = WLAN(mode=WLAN.AP, ssid=self.ID, auth=(WLAN.WPA2, 'Own password'), channel=11, antenna=WLAN.INT_ANT)
+            self.wlan.ifconfig(id=1, config=('192.168.1.1', '255.255.255.0', '192.168.1.1', '8.8.8.8'))
+            print("Did set up own AP ");

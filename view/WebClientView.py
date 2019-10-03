@@ -19,11 +19,60 @@ class WebClientView:
             httpget.addLine(strline);
             if not line or strline == '\r\n':
                 break
+        #Send Message Action
         if (httpget.has("message") and httpget.has("target")):
             mess = httpget.get("message")
             tar = httpget.get("target")
             message = Message(mess, tar, self.meshNetworkState.me.rloc16, 0, False, False, False)
             self.messageBoard.sendMessage(message)
+        #
+
+    def getResponse(self):
+        return self.getIndexResponse()
+
+    def getIndexResponse(self):
+        #perhaps read and include all files from www/include?
+        f = open("www/cryptico.min.js", 'r')
+        javascriptContents = f.read()
+        f.close();
+
+        f = open("www/clientsideapp.js", 'r')
+        javascriptContents += "\n" + f.read()
+        f.close();
+
+        f = open("www/style.css", 'r')
+        cssStyleContents = f.read()
+        f.close();
+
+        f = open("www/body.html", 'r')
+        htmlBodyTop = f.read()
+        f.close();
+
+
+
+        htmlStart = """<!DOCTYPE html>
+        <html>
+            <head> <title>Pycom loramesh</title> </head>
+            <script type=\"text/javascript\">
+                """ + javascriptContents + """
+            </script>
+            <style>
+                """ + cssStyleContents + """
+            </style>
+
+            <body>
+                """ + htmlBodyTop + """
+                <h1>Message Log</h1>
+                <a href="http://192.168.1.1">reload</a>
+                """
+
+        htmlEnd = """</body>
+        </html>
+        """
+
+        messageBoardHTML = self.getMessagesHTML()
+        messageBoardHTML += self.getNeighborsHTML()
+        return htmlStart + messageBoardHTML + htmlEnd
 
     def getNeighborsHTML(self):
         ret = "<h2>Neighborhood</h2>"
@@ -134,7 +183,6 @@ class WebClientView:
 
 
     def getMessagesHTML(self):
-
         messageBoardHTML = "<h2>Received Messages</h2>"
         messageBoardHTML += "<table>"
         for message in self.messageBoard.getReceivedMessages():
@@ -160,6 +208,4 @@ class WebClientView:
         messageHTML += "<td>From: " + str(message.getSender()) + "</td>"
         messageHTML += "<td>To: " + str(message.getTarget()) + "</td>"
         messageHTML += "<td>Content: " + str(message.getContent()) + "</td>"
-
-
         return messageHTML

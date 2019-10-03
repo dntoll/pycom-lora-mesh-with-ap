@@ -52,8 +52,7 @@ class LoraMeshAdapter:
         self.messageBoard = messageBoard
         self.meshNetworkState = meshNetworkState;
 
-        pycom.wifi_on_boot(False)
-        pycom.heartbeat(False)
+
         self.lora = LoRa(mode=LoRa.LORA, region=LoRa.EU868, bandwidth=LoRa.BW_125KHZ, sf=7)
         mac = self.lora.mac();
         self.MAC = str(int.from_bytes(mac, 'big')) #str(ubinascii.hexlify(self.lora.mac()))[2:-1]
@@ -85,6 +84,7 @@ class LoraMeshAdapter:
         if not self.mesh.is_connected():
             print("%d: State %s, single %s"%(time.time(), self.mesh.cli('state'), self.mesh.cli('singleton')))
         else:
+            #Update mesh information
             self.meshNetworkState.setNeighbors(self.mesh.neighbors(), self.mesh.neighbors_ip(), self.mesh.mesh.routers(), self.mesh.mesh.ipaddr())
             neigbors = self.mesh.neighbors_ip()
             print("%d neighbors, IPv6 list: %s"%(len(neigbors), neigbors))
@@ -98,4 +98,4 @@ class LoraMeshAdapter:
                 except Exception as e:
                     print("something went wrong when sending message " + repr(e))
                     pass
-            self.messageBoard.sendCompleted()
+            self.messageBoard.sendCompleted() #remove accs etc..

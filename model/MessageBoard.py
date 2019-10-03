@@ -23,9 +23,7 @@ class MessageBoard:
         self.toBeSent.append(message)
 
     def receiveMessage(self, message):
-        #we only care about our own messages
-        #print(message.target)
-        #print(self.meshState.me.rloc16)
+        #we only care about our own messages or broadcasts
         if self.meshState.isDirectedToMe(message.target):
             if message.isACK:
                 self._receivedAccMessageForMe(message);
@@ -42,7 +40,7 @@ class MessageBoard:
         newSendList = []
         for sent in self.toBeSent:
             if message.isAccForMessage(sent) == False:
-                newSendList.append(sent)
+                newSendList.append(sent) #We "remove messages" being acced by adding all others to the new send list
             else:
                 self.sent.append(sent)
         self.toBeSent = newSendList #remove from send list
@@ -53,12 +51,12 @@ class MessageBoard:
 
         for sent in self.toBeSent:
             if sent.isACK == False and sent.isBroadCast() == False:
-                newSendList.append(sent)
+                newSendList.append(sent) #Messages that are not ACC and not broadcasts should be kept in the send list until an acc is received
             else:
                 if sent.isDecoration():
-                    pass
+                    pass #we just remove these
                 else:
-                    self.sent.append(sent)
+                    self.sent.append(sent) #broadcasts are added here
         self.toBeSent = newSendList
 
     def getReceivedMessages(self):
