@@ -41,8 +41,9 @@ def receive_pack(tuple):
             message = Message.fromString(strData)
             messageBoard.receiveMessage(message)
             print("Received message from " + str(message.getSender()))
+
     except Exception as e:
-        print("something went wrong in receive_pack " + repr(tuple)
+        print("something went wrong in receive_pack " + repr(tuple))
         #raise e
 
 
