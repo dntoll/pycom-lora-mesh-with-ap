@@ -25,25 +25,25 @@ from builtins import int
 
 
 def receive_pack(tuple):
-    print("receive_pack:" + repr(tuple))
-    sockets, messageBoard = tuple
-    #print("receive_pack called")
-    # listen for incomming packets
-    for s in sockets:
-        rcv_data, rcv_addr = s.recvfrom(512)
-        if len(rcv_data) == 0:
-            break
-        rcv_ip = rcv_addr[0]
-        rcv_port = rcv_addr[1]
+    try:
+        print("receive_pack:" + repr(tuple))
+        sockets, messageBoard = tuple
+        #print("receive_pack called")
+        # listen for incomming packets
+        for s in sockets:
+            rcv_data, rcv_addr = s.recvfrom(512)
+            if len(rcv_data) == 0:
+                break
+            rcv_ip = rcv_addr[0]
+            rcv_port = rcv_addr[1]
 
-        strData = rcv_data.decode();
-        try:
+            strData = rcv_data.decode();
             message = Message.fromString(strData)
             messageBoard.receiveMessage(message)
             print("Received message from " + str(message.getSender()))
-        except Exception as e:
-            print("something went wrong in receive_pack " + repr(e) +" Data: "+ repr(strData) + " Len: " + str(len(strData)))
-            #raise e
+    except Exception as e:
+        print("something went wrong in receive_pack " + repr(tuple)
+        #raise e
 
 
 class LoraMeshAdapter:

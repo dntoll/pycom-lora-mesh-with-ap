@@ -17,10 +17,13 @@ class Message:
     #https://openthread.io/guides/thread-primer/ipv6-addressing#multicast
     TYPE_BROADCAST = "ff03::1";
 
-    def __init__(self, content, target, sender, sendCount, isAck, hasBeenAcced, isDecoration):
+    def __init__(self, content, target, sender, time, sendCount, isAck, hasBeenAcced, isDecoration):
         self.content = content
         self.target = target
         self.sender = sender
+        self.time = time
+
+        #Meta information
         self.sendCount = sendCount
         self.isACK = isAck
         self.hasBeenAcced = hasBeenAcced
@@ -44,14 +47,15 @@ class Message:
         self.sendCount = self.sendCount + 1
 
     def toString(self):
-        tuple = [self.content, self.target, self.sender, self.sendCount, self.isACK, self.hasBeenAcced, self.isSelfInformation]
+        tuple = [self.content, self.target, self.sender, self.time, self.sendCount, self.isACK, self.hasBeenAcced, self.isSelfInformation]
         return ubinascii.b2a_base64(json.dumps(tuple))
-        
+
     def toDictionary(self):
         dict = {
-            "Content" : self.content,
-            "Target" : self.target,
-            "Sender" : self.sender
+            "content" : self.content,
+            "target" : self.target,
+            "sender" : self.sender,
+            "time" : self.time
         }
         return dict
 
@@ -59,10 +63,10 @@ class Message:
 
         rawText = ubinascii.a2b_base64(strData)
         tuple = json.loads(rawText);
-        content, target, sender, sendCount, isACK, hasBeenAcced, isSelfInformation = tuple
-        message = Message(content, target, sender, sendCount, isACK, hasBeenAcced, isSelfInformation)
+        content, target, sender, time, sendCount, isACK, hasBeenAcced, isSelfInformation = tuple
+        message = Message(content, target, sender, time, sendCount, isACK, hasBeenAcced, isSelfInformation)
 
         return message
 
     def isAccForMessage(self, message):
-        return self.content == message.content and self.sender == message.target
+        return self.content == message.content and self.sender == message.target and self.time == message.time

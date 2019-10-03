@@ -38,7 +38,43 @@ function onDownloadedMessages(something) {
 
   var obj = JSON.parse(something);
 
-  console.log(obj)
+  console.log(obj["To be sent"])
+  let toBeSent = obj["To be sent"];
+  let sent = obj["Sent"];
+  let received = obj["Received"];
+
+  messageBoardHTML = "<h2>Received Messages</h2>"
+  messageBoardHTML += "<table><tr><th>From</th><th>To</th><th>Content</th><th>Time</th></tr>"
+  for (const message of received) {
+    messageBoardHTML += "<tr>" +  getMessageHTML(message)  + " </tr>"
+  }
+  messageBoardHTML +=  "</table>"
+
+  messageBoardHTML += "<h2>Send Que</h2>"
+  messageBoardHTML += "<table><tr><th>From</th><th>To</th><th>Content</th><th>Time</th></tr>"
+  for (const message of sent) {
+    messageBoardHTML += "<tr>" +  getMessageHTML(message)  + " </tr>"
+  }
+  messageBoardHTML = messageBoardHTML + "</table>"
+
+  messageBoardHTML += "<h2>Sent Messages</h2>"
+  messageBoardHTML += "<table><tr><th>From</th><th>To</th><th>Content</th><th>Time</th></tr>"
+  for (const message of toBeSent) {
+    messageBoardHTML += "<tr>" +  getMessageHTML(message)  + " </tr>"
+  }
+  messageBoardHTML = messageBoardHTML + "</table>"
+
+
+
+  messagesDiv.innerHTML = messageBoardHTML;
+}
+function getMessageHTML(message) {
+  messageHTML = ""
+  messageHTML += "<td>" + message.sender + "</td>"
+  messageHTML += "<td>" + message.target + "</td>"
+  messageHTML += "<td>" + message.content + "</td>"
+  messageHTML += "<td>" + message.time + "</td>"
+  return messageHTML
 }
 
 function onDownloadedNetwork(something) {
@@ -49,7 +85,7 @@ function onDownloadedNetwork(something) {
 function onUploadedMessages(something) {
   var messageElement= document.getElementById("messageID");
   messageElement.value = "";
-  updateMessages()
+  onDownloadedMessages(something)
 }
 
 //API Calls
@@ -57,11 +93,14 @@ function userSendsMessage() {
   var targetElement= document.getElementById("targetID");
   var messageElement= document.getElementById("messageID");
 
+
   let message = messageElement.value;
   let target = targetElement.value;
 
+  var d = new Date();
+  let time = d.getTime();
 	$.ajax({
-	  url:  "?message=" + message + "&target=" + target,
+	  url:  "?message=" + message + "&target=" + target + "&time="+ time,
 	  context: document.body,
 	   error: onError
 	}).done(onUploadedMessages);
@@ -95,6 +134,8 @@ window.setInterval(function(){
 
 window.onload = function() {
   loadPersonalInformation();
+  updateNetwork();
+  updateMessages();
 };
 
 //interface för din egen session men som lagras på klienten

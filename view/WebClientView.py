@@ -23,7 +23,7 @@ class WebClientView:
                 break
 
     def userSendsMessage(self):
-        return self.httpget.has("message") and self.httpget.has("target")
+        return self.httpget.has("message") and self.httpget.has("target") and self.httpget.has("time")
 
     def userPollsMessages(self):
         return self.httpget.has("messages")
@@ -34,7 +34,8 @@ class WebClientView:
     def getMessage(self):
         mess = self.httpget.get("message")
         tar = self.httpget.get("target")
-        return Message(mess, tar, self.meshNetworkState.me.rloc16, 0, False, False, False)
+        time = self.httpget.get("time")
+        return Message(mess, tar, self.meshNetworkState.me.rloc16, time, 0, False, False, False)
 
     def getIndexResponse(self):
         #perhaps read and include all files from www/include?
@@ -191,38 +192,10 @@ class WebClientView:
         return row
 
 
-    def getMessagesHTML(self):
+    def getMessagesJSON(self):
         dict = {
             "Received" : self.messageBoard.getReceivedMessagesList(),
             "To be sent" : self.messageBoard.getMessagesToBeSentList(),
             "Sent" : self.messageBoard.getMessagesSentList()
         }
         return ujson.dumps(dict)
-        '''
-        messageBoardHTML = "<h2>Received Messages</h2>"
-        messageBoardHTML += "<table>"
-        for message in self.messageBoard.getReceivedMessages():
-            messageBoardHTML += "<tr>" + self._getMessageHTML(message) + " </tr>"
-        messageBoardHTML +=  "</table>"
-
-        messageBoardHTML += "<h2>Send Que</h2>"
-        messageBoardHTML += "<table>"
-        for message in self.messageBoard.getMessagesToBeSent():
-            messageBoardHTML += "<tr>" + self._getMessageHTML(message) + " </tr>"
-        messageBoardHTML = messageBoardHTML + "</table>"
-
-        messageBoardHTML += "<h2>Sent Messages</h2>"
-        messageBoardHTML += "<table>"
-        for message in self.messageBoard.getMessagesSent():
-            messageBoardHTML += "<tr>" + self._getMessageHTML(message) + " </tr>"
-        messageBoardHTML = messageBoardHTML + "</table>"
-
-        return messageBoardHTML;
-        '''
-
-    def _getMessageHTML(self, message):
-        messageHTML = ""
-        messageHTML += "<td>From: " + str(message.getSender()) + "</td>"
-        messageHTML += "<td>To: " + str(message.getTarget()) + "</td>"
-        messageHTML += "<td>Content: " + str(message.getContent()) + "</td>"
-        return messageHTML

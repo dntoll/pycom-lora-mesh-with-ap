@@ -88,5 +88,5 @@ class MessageBoard:
 
     def sendAcc(self, message):
         #note sender and target swapped places here...
-        accMessage = Message(message.content, message.sender, message.target, 0, True, False, False);
+        accMessage = Message(message.content, message.sender, message.target, message.time, 0, True, False, False);
         self.sendMessage(accMessage)

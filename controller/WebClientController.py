@@ -13,16 +13,12 @@ class WebClientController:
 
         #Send Message Action
         if self.view.userSendsMessage():
-            print("User Sends Message");
             message = self.view.getMessage()
             self.messageBoard.sendMessage(message)
-            return "sent"
+            return self.view.getMessagesJSON()
         elif self.view.userPollsMessages():
-            print("User Polls Messages");
-            return self.view.getMessagesHTML()
+            return self.view.getMessagesJSON()
         elif self.view.userPollsNetwork():
-
-            print("User Polls Netowk");
             return self.view.getNeighborsHTML()
         else:
             return self.view.getIndexResponse()

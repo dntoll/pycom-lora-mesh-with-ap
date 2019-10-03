@@ -28,6 +28,7 @@ from FirmwareHasher import FirmwareHasher
 
 import time
 import machine
+import utime
 
 class LoraMeshChatApplication:
     """ Class for chatting over Lora """
@@ -59,4 +60,4 @@ class LoraMeshChatApplication:
         self.timeToSendSelfInfo -= 10
         if self.timeToSendSelfInfo <= 0:
             self.timeToSendSelfInfo = 40;
-            self.messageBoard.sendMessage(Message(self.decoration.toString(), Message.TYPE_BROADCAST, self.meshState.getIP(), 0, False, False, True))
+            self.messageBoard.sendMessage( Message(self.decoration.toString(), Message.TYPE_BROADCAST, self.meshState.getIP(), utime.time(), 0, False, False, True))
