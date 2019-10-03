@@ -9,6 +9,7 @@ class HTTPGet:
         if strline.startswith("GET /?"):
             messageEnd = strline.find(" HTTP/1.1")
             allGetStuff = strline[6:messageEnd]; #skip GET /?
+            print(allGetStuff)
             parts = allGetStuff.split("&")
 
 

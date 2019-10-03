@@ -1,8 +1,8 @@
 
 
 
-from NetworkNode import NetworkNode
-from NetworkNodeDecoration import NetworkNodeDecoration
+from model.NetworkNode import NetworkNode
+from model.NetworkNodeDecoration import NetworkNodeDecoration
 
 class MeshNetworkState:
 

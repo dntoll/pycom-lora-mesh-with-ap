@@ -12,7 +12,7 @@ __version__ = '1'
 
 from loramesh import Loramesh
 from network import LoRa
-from Message import Message
+from model.Message import Message
 
 import ubinascii
 import binascii

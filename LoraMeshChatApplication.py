@@ -10,15 +10,22 @@
 
 __version__ = '1'
 
-from WifiAP import WifiAP
-from WebServer import WebServer
-from LoraMeshAdapter import LoraMeshAdapter
-from MeshNetworkState import MeshNetworkState
-from NetworkNodeDecoration import NetworkNodeDecoration
-from MessageBoard import MessageBoard
-from WebClientView import WebClientView
+import model
+import view
+
+from model.MessageBoard import MessageBoard
+from model.Message import Message
+from model.LoraMeshAdapter import LoraMeshAdapter
+from model.MeshNetworkState import MeshNetworkState
+from model.NetworkNodeDecoration import NetworkNodeDecoration
+
+
+from controller.WebClientController import WebClientController
+from view.WebClientView import WebClientView
+from view.WifiAP import WifiAP
+from view.WebServer import WebServer
 from FirmwareHasher import FirmwareHasher
-from Message import Message
+
 import time
 import machine
 
@@ -36,8 +43,11 @@ class LoraMeshChatApplication:
         self.meshState = MeshNetworkState(self.decoration)
         self.messageBoard = MessageBoard(self.meshState)
         self.mesh = LoraMeshAdapter(self.messageBoard, self.meshState)
+
         self.view = WebClientView(self.messageBoard, self.meshState)
-        self.www = WebServer(self.view)
+        self.controller = WebClientController(self.messageBoard, self.meshState, self.view)
+
+        self.www = WebServer(self.controller)
 
 
     def update(self):

@@ -10,7 +10,7 @@
 
 __version__ = '1'
 
-from Message import Message
+from model.Message import Message
 
 class MessageBoard:
     def __init__(self, meshState):

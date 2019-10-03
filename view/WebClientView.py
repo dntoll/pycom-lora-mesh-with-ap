@@ -1,6 +1,6 @@
-from Message import Message
+from model.Message import Message
 from unquote import unquote
-from HTTPGet import HTTPGet
+from view.HTTPGet import HTTPGet
 
 class WebClientView:
 
@@ -9,26 +9,30 @@ class WebClientView:
         self.messageBoard = messageBoard;
         self.meshNetworkState = meshNetworkState;
 
+    def handleRequest(self, cl_file):
 
-    def handleRequest(self, cl_file, addr):
-        httpget = HTTPGet()
+        self.httpget = HTTPGet()
 
         while True:
             line = cl_file.readline()
             strline = line.decode();
-            httpget.addLine(strline);
+            self.httpget.addLine(strline);
             if not line or strline == '\r\n':
                 break
-        #Send Message Action
-        if (httpget.has("message") and httpget.has("target")):
-            mess = httpget.get("message")
-            tar = httpget.get("target")
-            message = Message(mess, tar, self.meshNetworkState.me.rloc16, 0, False, False, False)
-            self.messageBoard.sendMessage(message)
-        #
 
-    def getResponse(self):
-        return self.getIndexResponse()
+    def userSendsMessage(self):
+        return self.httpget.has("message") and self.httpget.has("target")
+
+    def userPollsMessages(self):
+        return self.httpget.has("messages")
+
+    def userPollsNetwork(self):
+        return self.httpget.has("network")
+
+    def getMessage(self):
+        mess = self.httpget.get("message")
+        tar = self.httpget.get("target")
+        return Message(mess, tar, self.meshNetworkState.me.rloc16, 0, False, False, False)
 
     def getIndexResponse(self):
         #perhaps read and include all files from www/include?
@@ -38,6 +42,10 @@ class WebClientView:
 
         f = open("www/clientsideapp.js", 'r')
         javascriptContents += "\n" + f.read()
+        f.close();
+
+        f = open("www/jquery-3.4.1.min.js", 'r')
+        jQuery = "\n" + f.read()
         f.close();
 
         f = open("www/style.css", 'r')
@@ -50,29 +58,28 @@ class WebClientView:
 
 
 
-        htmlStart = """<!DOCTYPE html>
+        html = """<!DOCTYPE html>
         <html>
             <head> <title>Pycom loramesh</title> </head>
-            <script type=\"text/javascript\">
+
+            <script t language=\"JavaScript\" type=\"text/javascript\" >
+                """ + jQuery + """
+            </script>
+            
+            <script t language=\"JavaScript\" type=\"text/javascript\" >
                 """ + javascriptContents + """
             </script>
+
             <style>
                 """ + cssStyleContents + """
             </style>
 
             <body>
                 """ + htmlBodyTop + """
-                <h1>Message Log</h1>
-                <a href="http://192.168.1.1">reload</a>
-                """
-
-        htmlEnd = """</body>
+            </body>
         </html>
         """
-
-        messageBoardHTML = self.getMessagesHTML()
-        messageBoardHTML += self.getNeighborsHTML()
-        return htmlStart + messageBoardHTML + htmlEnd
+        return html
 
     def getNeighborsHTML(self):
         ret = "<h2>Neighborhood</h2>"

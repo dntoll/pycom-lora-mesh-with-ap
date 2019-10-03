@@ -14,15 +14,76 @@ function storePersonalInformation(){
   var myRSAKey = cryptico.generateRSAKey(let, Bits);
 };
 
-window.onload = function() {
+function loadPersonalInformation() {
   var inputElements = ["phoneID", "nameID", "passfraseID"];
 
   for (const variable of inputElements) {
     var inputElement= document.getElementById(variable);
     inputElement.value = localStorage.getItem(variable);
   }
-};
+}
 
+
+
+function onError(xhr, ajaxOptions, thrownError) {
+		console.log("onError", xhr, ajaxOptions, thrownError);
+}
+
+function onDownloadedMessages(something) {
+  var messagesDiv= document.getElementById("messages");
+  messagesDiv.innerHTML = something
+}
+
+function onDownloadedNetwork(something) {
+  var networkDiv= document.getElementById("network");
+  networkDiv.innerHTML = something
+}
+
+function onUploadedMessages(something) {
+  var messageElement= document.getElementById("messageID");
+  messageElement.value = "";
+}
+
+function userSendsMessage() {
+  var targetElement= document.getElementById("targetID");
+  var messageElement= document.getElementById("messageID");
+
+  let message = messageElement.value;
+  let target = targetElement.value;
+
+	$.ajax({
+	  url:  "?message=" + message + "&target=" + target,
+	  context: document.body,
+	   error: onError
+	}).done(updateMessages);
+}
+
+function updateMessages() {
+	$.ajax({
+	  url:  "?messages=update",
+	  context: document.body,
+	   error: onError
+	}).done(onDownloadedMessages);
+}
+
+function updateNetwork() {
+	$.ajax({
+	  url:  "?network=update",
+	  context: document.body,
+	   error: onError
+	}).done(onDownloadedNetwork);
+}
+
+
+
+window.setInterval(function(){
+  updateNetwork();
+  updateMessages();
+}, 5000);
+
+window.onload = function() {
+  loadPersonalInformation();
+};
 
 //Om ansluten: Ladda om sidan då och då eller iaf hämta ny information typ var 10 sekund
 

@@ -18,7 +18,14 @@
 
 <h2>Send messages</h2>
 <form method="get">
-Message:<input type='text' name='message'><br/>
-Target IP :<input type='text' name='target' id='idtarget' value='ff03::1'>
-        <input type="submit" value="Submit">
+Message:   <input type='text' name='message' id='messageID'><br/>
+Target IP :<input type='text' name='target' id='targetID' value='ff03::1'>
+
+        <button type="button" onclick="userSendsMessage()">Send</button>
 </form>
+
+<h2>Message Log</h2>
+<div id='messages'></div>
+
+<h2>Network</h2>
+<div id='network'></div>
