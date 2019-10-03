@@ -21,14 +21,15 @@ class WebServer:
                 cl, addr = s.accept()
                 print('client connected from', addr)
                 cl_file = cl.makefile()
-                response = this.webClientController.handleRequest(cl_file, addr);
-                cl.send(response)
+                response = this.webClientController.handleRequest(cl_file, addr, cl);
+
                 cl.close()
             except Exception as e:
                 try:
                     response =  repr(e)
                     cl.send(response)
                     cl.close()
+                    raise e
                 except Exception as e:
                     print("something went wrong when sending message " + repr(e))
-                #raise e
+                    raise e

@@ -37,54 +37,30 @@ class WebClientView:
         time = self.httpget.get("time")
         return Message(mess, tar, self.meshNetworkState.me.rloc16, time, 0, False, False, False)
 
-    def getIndexResponse(self):
+    def getIndexResponse(self, connection):
         #perhaps read and include all files from www/include?
-        f = open("www/cryptico.min.js", 'r')
-        javascriptContents = f.read()
-        f.close();
 
-        f = open("www/clientsideapp.js", 'r')
-        javascriptContents += "\n" + f.read()
-        f.close();
-
-        f = open("www/jquery-3.4.1.min.js", 'r')
-        jQuery = "\n" + f.read()
-        f.close();
-
-        f = open("www/style.css", 'r')
-        cssStyleContents = f.read()
-        f.close();
-
-        f = open("www/body.html", 'r')
-        htmlBodyTop = f.read()
-        f.close();
-
-
-
-        html = """<!DOCTYPE html>
+        connection.send("""<!DOCTYPE html>
         <html>
             <head> <title>Pycom loramesh</title> </head>
 
             <script t language=\"JavaScript\" type=\"text/javascript\" >
-                """ + jQuery + """
-            </script>
+                """)
+        self.sendFile("www/jquery-3.4.1.min.js", connection)
+        connection.send("</script><script t language=\"JavaScript\" type=\"text/javascript\" >")
+        self.sendFile("www/cryptico.min.js", connection)
+        self.sendFile("www/clientsideapp.js", connection)
+        connection.send( "</script><style>")
+        self.sendFile("www/style.css", connection)
+        connection.send("</style> <body>");
+        self.sendFile("www/body.html", connection)
+        connection.send("</body></html>")
+    def sendFile(self, filename, connection):
+        f = open(filename, 'r')
+        connection.send(f.read())
+        f.close();
 
-            <script t language=\"JavaScript\" type=\"text/javascript\" >
-                """ + javascriptContents + """
-            </script>
-
-            <style>
-                """ + cssStyleContents + """
-            </style>
-
-            <body>
-                """ + htmlBodyTop + """
-            </body>
-        </html>
-        """
-        return html
-
-    def getNeighborsHTML(self):
+    def getNeighborsHTML(self, connection):
         ret = "<h2>Neighborhood</h2>"
 
         ret += "<table>"
@@ -96,7 +72,7 @@ class WebClientView:
             ret += "<tr>" + self._getCompleteNodeHTML(mac) + "</tr>"
         ret += "</table>"
 
-        return ret;
+        connection.send(ret)
 
     def _translateRole(self, role):
         if role == 0:
@@ -192,10 +168,11 @@ class WebClientView:
         return row
 
 
-    def getMessagesJSON(self):
+    def getMessagesJSON(self, connection):
         dict = {
             "Received" : self.messageBoard.getReceivedMessagesList(),
             "To be sent" : self.messageBoard.getMessagesToBeSentList(),
             "Sent" : self.messageBoard.getMessagesSentList()
         }
-        return ujson.dumps(dict)
+        ret = ujson.dumps(dict)
+        connection.send(ret)

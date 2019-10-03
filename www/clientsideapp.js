@@ -52,14 +52,14 @@ function onDownloadedMessages(something) {
 
   messageBoardHTML += "<h2>Send Que</h2>"
   messageBoardHTML += "<table><tr><th>From</th><th>To</th><th>Content</th><th>Time</th></tr>"
-  for (const message of sent) {
+  for (const message of toBeSent) {
     messageBoardHTML += "<tr>" +  getMessageHTML(message)  + " </tr>"
   }
   messageBoardHTML = messageBoardHTML + "</table>"
 
   messageBoardHTML += "<h2>Sent Messages</h2>"
   messageBoardHTML += "<table><tr><th>From</th><th>To</th><th>Content</th><th>Time</th></tr>"
-  for (const message of toBeSent) {
+  for (const message of sent) {
     messageBoardHTML += "<tr>" +  getMessageHTML(message)  + " </tr>"
   }
   messageBoardHTML = messageBoardHTML + "</table>"

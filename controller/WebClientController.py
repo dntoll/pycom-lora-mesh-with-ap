@@ -6,7 +6,7 @@ class WebClientController:
         self.meshNetworkState = meshNetworkState;
         self.view = view;
 
-    def handleRequest(self, cl_file, addr):
+    def handleRequest(self, cl_file, addr, connection):
 
         self.view.handleRequest(cl_file)
 
@@ -15,10 +15,10 @@ class WebClientController:
         if self.view.userSendsMessage():
             message = self.view.getMessage()
             self.messageBoard.sendMessage(message)
-            return self.view.getMessagesJSON()
+            self.view.getMessagesJSON(connection)
         elif self.view.userPollsMessages():
-            return self.view.getMessagesJSON()
+            self.view.getMessagesJSON(connection)
         elif self.view.userPollsNetwork():
-            return self.view.getNeighborsHTML()
+            self.view.getNeighborsHTML(connection)
         else:
-            return self.view.getIndexResponse()
+            self.view.getIndexResponse(connection)
