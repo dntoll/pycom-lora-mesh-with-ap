@@ -45,7 +45,7 @@ class WebClientView:
         mess = self.httpget.get("message")
         tar = self.httpget.get("target")
         time = self.httpget.get("time")
-        return Message(mess, tar, self.meshNetworkState.me.rloc16, time, 0, False, False, False)
+        return Message(mess, tar, self.meshNetworkState.getMac(), time, 0, False, False)
 
     def sendIndexPageHTML(self, connection):
         #perhaps read and include all files from www/include?
@@ -90,7 +90,7 @@ class WebClientView:
         ret += "<tr>" + self._getTitlesHTML() + "</tr>"
 
         for mac in self.meshNetworkState.getAllNodesMacs():
-            ret += "<tr>" + self._getCompleteNodeHTML(mac) + "</tr>"
+            ret += "<tr><a onclick='document.getElementById(\"targetID\").value=\"" + str(mac) + "\"'>" + self._getCompleteNodeHTML(mac) + "</a></tr>"
         ret += "</table>"
 
         connection.send(ret)
@@ -171,7 +171,7 @@ class WebClientView:
         row += "<td>" + str(ip) + "</td>"
         #row += "<td>" + str(mlEID) + "</td>"
 
-        row += "<td><a onclick='document.getElementById(\"targetID\").value=\"" + str(mlEID) + "\"'>" + str(mlEID) + "</a></td>"
+        row += "<td>" + str(mlEID) + "</td>"
         row += "<td>" + self._translateRole(role) + "</td>"
         row += "<td>" + str(rssi) + "</td>"
         row += "<td>" + str(path_cost) + "</td>"
@@ -179,7 +179,7 @@ class WebClientView:
         row += "<td>" + str(id) + "</td>"
 
         html = "<dl>";
-        for client in clients:
+        for number, client in clients.items():
             html += "<dt>phoneNumber</dt><dd>" + str(client.phoneNumber) + "</dd>"
             html += "<dt>name</dt><dd>" + str(client.name) + "</dd>"
             html += "<dt>publicKeyString</dt><dd>" + str(client.publicKeyString) + "</dd>"

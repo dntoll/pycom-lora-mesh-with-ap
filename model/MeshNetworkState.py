@@ -1,6 +1,6 @@
 
 
-
+from model.Message import Message
 from model.NetworkNode import NetworkNode
 from model.NetworkNodeDecoration import NetworkNodeDecoration
 
@@ -42,15 +42,26 @@ class MeshNetworkState:
         self.selfDecoration.mac = mac
 
     def setClient(self, client):
-        self.selfDecoration.clientsConnectedAtMySite.append(client)
+        self.selfDecoration.clientsConnectedAtMySite[client.phoneNumber] = client
 
-    def getIP(self):
-        return self.me.getIP()
+    def getMac(self):
+        return self.me.getMac()
+
+    def getIPFromMac(self, mac):
+        if mac == self.me.mac:
+            return self.me.ip
+        elif mac in self.neighbors:
+            return self.neighbors[mac].rloc16
+        elif mac in self.others:
+            return self.others[mac].mlEID
+        elif mac == Message.TYPE_BROADCAST:
+            return Message.TYPE_BROADCAST
+        else:
+            raise Exception("this address has no receiver");
+
     def isDirectedToMe(self, targetAddress):
 
-        if targetAddress == self.me.rloc16:
-            return True
-        elif targetAddress == self.me.ip:
+        if targetAddress == self.me.mac:
             return True
         return False
 

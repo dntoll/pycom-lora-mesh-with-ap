@@ -44,8 +44,11 @@ def receive_pack(tuple):
 
     except Exception as e:
         print("something went wrong in receive_pack " + repr(tuple))
-        #raise e
+        raise e
 
+
+class NoRecipientException(Exception):
+    pass
 
 class LoraMeshAdapter:
     def __init__(self, messageBoard, meshNetworkState):
@@ -89,13 +92,16 @@ class LoraMeshAdapter:
             neigbors = self.mesh.neighbors_ip()
             print("%d neighbors, IPv6 list: %s"%(len(neigbors), neigbors))
 
-            for message in self.messageBoard.getMessagesToBeSent():
+            for key, message in self.messageBoard.getMessagesToBeSent().items():
                 message.doSend();
                 try:
                     theContent = message.toString();
-                    self.s.sendto(theContent, (message.target, self.myport))
-                    print('Sent message to %s '%(message.target)) #, repr(theContent)))
+                    ipTarget = self.meshNetworkState.getIPFromMac(message.target)
+                    self.s.sendto(theContent, (ipTarget, self.myport))
+                    print('Sent message to ' + message.target + " : " + ipTarget) #, repr(theContent)))
+                except NoRecipientException as nre:
+                    print("Could not send message to " + repr(message.target) + " since no ip was found...")
                 except Exception as e:
                     print("something went wrong when sending message " + repr(e))
-                    pass
+                    #raise e
             self.messageBoard.sendCompleted() #remove accs etc..

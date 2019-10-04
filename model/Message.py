@@ -12,12 +12,13 @@ __version__ = '1'
 
 import json
 import ubinascii
+import uhashlib
 
 class Message:
     #https://openthread.io/guides/thread-primer/ipv6-addressing#multicast
     TYPE_BROADCAST = "ff03::1";
 
-    def __init__(self, content, target, sender, time, sendCount, isAck, hasBeenAcced, isDecoration):
+    def __init__(self, content, target, sender, time, sendCount, isAck, isDecoration):
         self.content = content
         self.target = target
         self.sender = sender
@@ -26,8 +27,11 @@ class Message:
         #Meta information
         self.sendCount = sendCount
         self.isACK = isAck
-        self.hasBeenAcced = hasBeenAcced
         self.isSelfInformation = isDecoration
+
+    def getUniqueID(self):
+        hasher = uhashlib.md5(str(self.content) + str(self.target) + str(self.sender) + str(self.time))
+        return ubinascii.hexlify(hasher.digest()).decode()
 
     def getSender(self):
         return self.sender
@@ -47,7 +51,7 @@ class Message:
         self.sendCount = self.sendCount + 1
 
     def toString(self):
-        tuple = [self.content, self.target, self.sender, self.time, self.sendCount, self.isACK, self.hasBeenAcced, self.isSelfInformation]
+        tuple = [self.content, self.target, self.sender, self.time, self.sendCount, self.isACK, self.isSelfInformation]
         return ubinascii.b2a_base64(json.dumps(tuple))
 
     def toDictionary(self):
@@ -55,6 +59,9 @@ class Message:
             "content" : self.content,
             "target" : self.target,
             "sender" : self.sender,
+            "sendCount" : self.sendCount,
+            "isACK" : self.isACK,
+            "isSelfInformation" : self.isSelfInformation,
             "time" : self.time
         }
         return dict
@@ -63,8 +70,8 @@ class Message:
 
         rawText = ubinascii.a2b_base64(strData)
         tuple = json.loads(rawText);
-        content, target, sender, time, sendCount, isACK, hasBeenAcced, isSelfInformation = tuple
-        message = Message(content, target, sender, time, sendCount, isACK, hasBeenAcced, isSelfInformation)
+        content, target, sender, time, sendCount, isACK, isSelfInformation = tuple
+        message = Message(content, target, sender, time, sendCount, isACK, isSelfInformation)
 
         return message
 

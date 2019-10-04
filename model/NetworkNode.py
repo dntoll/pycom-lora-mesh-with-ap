@@ -16,3 +16,5 @@ class NetworkNode:
         self.ip = newIP
     def getIP(self):
         return self.ip
+    def getMac(self):
+        return self.mac

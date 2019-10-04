@@ -40,7 +40,7 @@ class LoraMeshChatApplication:
         firmware = FirmwareHasher.calculate();
         print("Code firmware: " + str(firmware))
 
-        self.decoration = NetworkNodeDecoration(self.ap.ID, -1, -1, firmware, [])
+        self.decoration = NetworkNodeDecoration(self.ap.ID, -1, -1, firmware, {})
         self.meshState = MeshNetworkState(self.decoration)
         self.messageBoard = MessageBoard(self.meshState)
         self.mesh = LoraMeshAdapter(self.messageBoard, self.meshState)
@@ -60,4 +60,4 @@ class LoraMeshChatApplication:
         self.timeToSendSelfInfo -= 10
         if self.timeToSendSelfInfo <= 0:
             self.timeToSendSelfInfo = 40;
-            self.messageBoard.sendMessage( Message(self.decoration.toString(), Message.TYPE_BROADCAST, self.meshState.getIP(), utime.time(), 0, False, False, True))
+            self.messageBoard.sendMessage( Message(self.decoration.toString(), Message.TYPE_BROADCAST, self.meshState.getMac(), utime.time(), 0, False, True))

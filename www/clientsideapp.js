@@ -1,9 +1,39 @@
+/*function Model() {
+  function Message(sender, target, content, time, isACK, isSelfInformation, sendCount) {
+
+  }
+
+  function PersonalInformation(name, phone, passfrase) {
+    var Bits = 128;
+    this.name = name;
+    this.phone = phone;
+    this.myRSAKey = cryptico.generateRSAKey(passfrase, Bits);
+  }
+
+
+  this.myPersonalInformation = new PersonalInformation();
+
+  function API() {
+    this.getMessages() {
+      $.ajax({
+    	  url:  "?messages=update",
+    	  context: document.body,
+    	   error: onError
+    	}).done(onDownloadedMessages);
+    }
+  }
+}
+
+function HTMLView(model) {
+  this.model = model;
+}
+*/
 
 
 var inputElements = ["phoneID", "nameID", "passfraseID"];
 var myRSAKey = "";
 
-function storePersonalInformation(){
+function storePersonalInformation() {
   for (const variable of inputElements) {
     var inputElement= document.getElementById(variable);
     localStorage.setItem(variable, inputElement.value);
@@ -11,9 +41,10 @@ function storePersonalInformation(){
 
   //Generate new RSAKey
   let passfrase = localStorage.getItem("passfraseID");
-  var Bits = 1024;
+  var Bits = 128;
 
   myRSAKey = cryptico.generateRSAKey(passfrase, Bits);
+  setRSAKeyHTML(myRSAKey);
   localStorage.setItem(myRSAKey, "RSAKey");
 
   var d = new Date();
@@ -36,6 +67,14 @@ function loadPersonalInformation() {
   }
 
   myRSAKey = localStorage.getItem("RSAKey");
+  setRSAKeyHTML(myRSAKey);
+}
+
+function setRSAKeyHTML(myRSAKey) {
+  let publickey = cryptico.publicKeyString(myRSAKey);
+  var RSAPublicKeyElement= document.getElementById("RSAPublicKeyID");
+  RSAPublicKeyElement.innerHTML = publickey
+
 }
 
 
@@ -56,21 +95,22 @@ function onDownloadedMessages(something) {
   let received = obj["Received"];
 
   messageBoardHTML = "<h2>Received Messages</h2>"
-  messageBoardHTML += "<table><tr><th>From</th><th>To</th><th>Content</th><th>Time</th></tr>"
+  messageBoardHTML += "<table>" + getMessageHeader()
   for (const message of received) {
     messageBoardHTML += "<tr>" +  getMessageHTML(message)  + " </tr>"
   }
   messageBoardHTML +=  "</table>"
 
   messageBoardHTML += "<h2>Send Que</h2>"
-  messageBoardHTML += "<table><tr><th>From</th><th>To</th><th>Content</th><th>Time</th></tr>"
+  messageBoardHTML += "<table>" + getMessageHeader()
   for (const message of toBeSent) {
     messageBoardHTML += "<tr>" +  getMessageHTML(message)  + " </tr>"
   }
   messageBoardHTML = messageBoardHTML + "</table>"
 
   messageBoardHTML += "<h2>Sent Messages</h2>"
-  messageBoardHTML += "<table><tr><th>From</th><th>To</th><th>Content</th><th>Time</th></tr>"
+  messageBoardHTML += "<table>" + getMessageHeader()
+
   for (const message of sent) {
     messageBoardHTML += "<tr>" +  getMessageHTML(message)  + " </tr>"
   }
@@ -80,12 +120,21 @@ function onDownloadedMessages(something) {
 
   messagesDiv.innerHTML = messageBoardHTML;
 }
+
+function getMessageHeader() {
+  return "<tr><th>From</th><th>To</th><th>Content</th><th>Time</th><th>isACK</th><th>isSelfInformation</th><th>sendCount</th></tr>"
+}
+
 function getMessageHTML(message) {
   messageHTML = ""
   messageHTML += "<td>" + message.sender + "</td>"
   messageHTML += "<td>" + message.target + "</td>"
   messageHTML += "<td>" + message.content + "</td>"
   messageHTML += "<td>" + message.time + "</td>"
+  messageHTML += "<td>" + message.isACK + "</td>"
+  messageHTML += "<td>" + message.isSelfInformation + "</td>"
+  messageHTML += "<td>" + message.sendCount + "</td>"
+
   return messageHTML
 }
 

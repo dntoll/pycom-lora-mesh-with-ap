@@ -14,50 +14,56 @@ from model.Message import Message
 
 class MessageBoard:
     def __init__(self, meshState):
-        self.received = []
-        self.toBeSent = []
-        self.sent = []
+        self.received = {}
+        self.toBeSent = {}
+        self.sent = {}
         self.meshState = meshState
 
     def sendMessage(self, message):
-        self.toBeSent.append(message)
+        messageHash = message.getUniqueID();
+
+        self.toBeSent[messageHash] = message
 
     def receiveMessage(self, message):
+
+        messageHash = message.getUniqueID();
         #we only care about our own messages or broadcasts
         if self.meshState.isDirectedToMe(message.target):
             if message.isACK:
                 self._receivedAccMessageForMe(message);
             else:
                 self.sendAcc(message)
-                self.received.append(message)
+                self.received[messageHash] = message
         elif message.isBroadCast():
             if message.isDecoration():
                 self.meshState.updateOthersDecorations(message)
             else:
-                self.received.append(message)
+                self.received[messageHash] = message
 
     def _receivedAccMessageForMe(self, message):
-        newSendList = []
-        for sent in self.toBeSent:
+        #messageHash = message.getUniqueID();
+        newSendDictionary = {}
+        for hash, sent in self.toBeSent.items():
             if message.isAccForMessage(sent) == False:
-                newSendList.append(sent) #We "remove messages" being acced by adding all others to the new send list
+                newSendList[hash] = sent #We "remove messages" being acced by adding all others to the new send list
             else:
-                self.sent.append(sent)
-        self.toBeSent = newSendList #remove from send list
+                self.sent[hash] =sent
+
+        self.toBeSent = newSendDictionary #remove from send list
 
     #remove acc
     def sendCompleted(self):
-        newSendList = []
+        newSendDictionary = {}
 
-        for sent in self.toBeSent:
+        for hash, sent in self.toBeSent.items():
             if sent.isACK == False and sent.isBroadCast() == False:
-                newSendList.append(sent) #Messages that are not ACC and not broadcasts should be kept in the send list until an acc is received
+                newSendDictionary[hash] = sent #Messages that are not ACC and not broadcasts should be kept in the send list until an acc is received
             else:
                 if sent.isDecoration():
                     pass #we just remove these
                 else:
-                    self.sent.append(sent) #broadcasts are added here
-        self.toBeSent = newSendList
+                    self.sent[hash] = sent #broadcasts are added here
+        self.toBeSent = newSendDictionary
 
     def getReceivedMessages(self):
         return self.received
@@ -70,23 +76,23 @@ class MessageBoard:
 
     def getReceivedMessagesList(self):
         ret = []
-        for message in self.received:
+        for hash, message in self.received.items():
             ret.append(message.toDictionary())
         return ret
 
     def getMessagesToBeSentList(self):
         ret = []
-        for message in self.toBeSent:
+        for hash, message in self.toBeSent.items():
             ret.append(message.toDictionary())
         return ret
 
     def getMessagesSentList(self):
         ret = []
-        for message in self.sent:
+        for hash, message in self.sent.items():
             ret.append(message.toDictionary())
         return ret
 
     def sendAcc(self, message):
         #note sender and target swapped places here...
-        accMessage = Message(message.content, message.sender, message.target, message.time, 0, True, False, False);
+        accMessage = Message(message.content, message.sender, message.target, message.time, 0, True, False);
         self.sendMessage(accMessage)

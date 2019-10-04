@@ -1,31 +1,110 @@
 <H1>Mesh network</H1>
 
-
-<h2>Your info</h2>
 <form method="get">
-
-  <fieldset>
-   <legend>Enter information that can be used to find you</legend>
-
+ <fieldset>
+   <legend>Enter information that can be used to find you and a passfrase to encrypt messages</legend>
+   Note this is only stored in your browser...
    <label for="phoneID">Your Phone number:</label><input type='text' name='phoneNumber' id='phoneID'><br/>
    <label for="nameID">Your Name :</label><input type='text' name='name' id='nameID'><br/>
    <label for="passfrase">Your Passfrase :</label><input type='text' name='passfrase' id='passfraseID'><br/>
+ </fieldset>
+    Key:<div id='RSAPublicKeyID'></div>
 
-   <button type="button" onclick="storePersonalInformation()">Store</button>
-
-  </fieldset>
+ <button type="button" onclick="storePersonalInformation()">Store</button>
 </form>
 
-<h2>Send messages</h2>
-<form method="get">
-Message:   <input type='text' name='message' id='messageID'><br/>
-Target IP :<input type='text' name='target' id='targetID' value='ff03::1'>
+<fieldset>
+ <legend>These are the people that you have interacted with in the past</legend>
+ Note this is only stored in your browser...
+  <table border=1>
+    <thead>
+    <tr>
+      <th>Name</th>
+      <th>phoneNumber</th>
+      <th>Last seen</th>
+      <th>Key</th>
+      <th>Message</th>
+    </tr>
+    </thead>
+    <tbody id='contactTableBody'>
+    <tr>
+      <td>Daniel Brun</td>
+      <td>070555555</td>
+      <td>2019-07-15 23:59 at MAC: 883158484</td>
+      <td><form method="get">
+          lfe9c989D0mjEPYaccCf4Q Trust:<input type='checkbox' name='trust' id='trust'>
+      </form></td>
+      <td>
+        <button type="button" name="button">Message</button>
+        <button type="button" onclick="">Remove</button>
+      </td>
+    </tr>
+   </tbody>
+  </table>
+</fieldset>
 
-        <button type="button" onclick="userSendsMessage()">Send</button>
+<fieldset>
+ <legend>Search for contacts using phoneNumber or name</legend>
+  <form method="get">
+  Name:   <input type='text' name='contactName' id=''><br/>
+  phoneNumber :<input type='text' name='contactPhone' id='' value=''>
+          <button type="button" onclick="">Search</button>
+  </form>
+</fieldset>
+
+<fieldset>
+<legend>Send messages</legend>
+<form>
+Name    <input type='text' name='public' id=''><br/>
+Phone Number  <input type='text' name='phoneNumber' id=''><br/>
+Public Key    <input type='text' name='public' id=''><br/>
+Your Message <textarea name="name" rows="8" cols="80"></textarea>
+
+<button type="button" onclick="">Encrypt and send</button>
 </form>
+</fieldset>
 
-<h2>Message Log</h2>
-<div id='messages'></div>
+<fieldset>
+ <legend>Inbox</legend>
+ Note this is only stored in your browser...
+  <table border=1>
+    <thead>
+    <tr>
+      <th>From</th>
+      <th>phoneNumber</th>
+      <th>Key</th>
+      <th>Mac</th>
+      <th>Time</th>
+      <th>Message</th>
+    </tr>
+    </thead>
+    <tbody id='messagesTableBody'>
+    <tr>
+      <td>Emil Brun</td>
+      <td>070505555</td>
+      <td>lfe9c989D0mjEPYaccCf4Q</td>
+      <td>8121069065052448237</td>
+      <td>2019-05-06 10:10:23</td>
+      <td><pre>Hello,
+        How are you?
+        </pre>
+      </td>
+    </tr>
+   </tbody>
+  </table>
+</fieldset>
 
-<h2>Network</h2>
-<div id='network'></div>
+<h1>Debug</h1>
+<fieldset>
+  <form method="get">
+  Message:   <input type='text' name='message' id='messageID'><br/>
+  Target Mac :<input type='text' name='target' id='targetID' value='ff03::1'>
+          <button type="button" onclick="userSendsMessage()">Send</button>
+  </form>
+
+  <h2>Message Log</h2>
+  <div id='messages'></div>
+
+  <h2>Network</h2>
+  <div id='network'></div>
+</fieldset>
