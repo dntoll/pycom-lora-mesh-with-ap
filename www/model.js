@@ -27,7 +27,7 @@ function API() {
     console.log("API.onError". xhr, ajaxOptions, thrownError);
   }
 
-  this.onMessagesUpdate = function(messagesJSON) {
+  this.onMessagesUpdate = function(messagesJSON, observer) {
     let obj = JSON.parse(messagesJSON);
 
     let toBeSent = this.parseMessageList(obj["To be sent"])
@@ -39,8 +39,9 @@ function API() {
 
   this.parseMessageList = function(pyMessageArray) {
     let ret = new MessageList();
-    for (const message of messageArray) {
-      ret.add(this.parseMessage(message));
+    for (const message of pyMessageArray) {
+      ret.push(this.parseMessage(message));
+    }
     return ret;
   }
   this.parseMessage = function(pyMessage) {
@@ -120,4 +121,8 @@ function Message(sender, target, content, time, isACK, isSelfInformation, sendCo
 
 function MessageList () {
   this.messages = [];
+
+  this.push = function(message) {
+    this.messages.push(message)
+  }
 }

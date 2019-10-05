@@ -32,35 +32,5 @@ function View(model) {
   }
 
   this.onDownloadedMessages = function(messagesJSON) {
-
-
-    var messagesDiv= document.getElementById("messages");
-
-
-    messageBoardHTML = "<h2>Received Messages</h2>"
-    messageBoardHTML += "<table>" + getMessageHeader()
-    for (const message of received) {
-      messageBoardHTML += "<tr>" +  getMessageHTML(message)  + " </tr>"
-    }
-    messageBoardHTML +=  "</table>"
-
-    messageBoardHTML += "<h2>Send Que</h2>"
-    messageBoardHTML += "<table>" + getMessageHeader()
-    for (const message of toBeSent) {
-      messageBoardHTML += "<tr>" +  getMessageHTML(message)  + " </tr>"
-    }
-    messageBoardHTML = messageBoardHTML + "</table>"
-
-    messageBoardHTML += "<h2>Sent Messages</h2>"
-    messageBoardHTML += "<table>" + getMessageHeader()
-
-    for (const message of sent) {
-      messageBoardHTML += "<tr>" +  getMessageHTML(message)  + " </tr>"
-    }
-    messageBoardHTML = messageBoardHTML + "</table>"
-
-
-
-    messagesDiv.innerHTML = messageBoardHTML;
   }
 }
