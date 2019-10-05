@@ -24,6 +24,9 @@ class WebServer:
                 response = this.webClientController.handleRequest(cl_file, addr, cl);
 
                 cl.close()
+
+            except OSError as e:
+                print("OSError went wrong when responding to client " + repr(e))
             except Exception as e:
                 try:
                     response =  repr(e)
@@ -31,5 +34,5 @@ class WebServer:
                     cl.close()
                     raise e
                 except Exception as e:
-                    print("something went wrong when sending message " + repr(e))
+                    print("something went wrong when responding to client " + repr(e))
                     raise e

@@ -34,6 +34,9 @@ class WebClientView:
     def userPollsNetwork(self):
         return self.httpget.has("network")
 
+    def browserAskForFavicon(self):
+        return self.httpget.hasFavicon();
+
     def getClient(self):
         phoneNumber = self.httpget.get("phoneNumber")
         name = self.httpget.get("name")
@@ -47,6 +50,9 @@ class WebClientView:
         time = self.httpget.get("time")
         return Message(mess, tar, self.meshNetworkState.getMac(), time, 0, False, False)
 
+    def sendFavicon(self, connection):
+        connection.send("poo")
+
     def sendIndexPageHTML(self, connection):
         #perhaps read and include all files from www/include?
 
@@ -59,7 +65,9 @@ class WebClientView:
         self.sendFile("www/jquery-3.4.1.min.js", connection)
         connection.send("</script><script t language=\"JavaScript\" type=\"text/javascript\" >")
         self.sendFile("www/cryptico.min.js", connection)
-        self.sendFile("www/clientsideapp.js", connection)
+        self.sendFile("www/model.js", connection)
+        self.sendFile("www/view.js", connection)
+        self.sendFile("www/controller.js", connection)
         connection.send( "</script><style>")
         self.sendFile("www/style.css", connection)
         connection.send("</style> <body>");

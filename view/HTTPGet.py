@@ -4,9 +4,12 @@ class HTTPGet:
 
     def __init__(self):
         self.allThemParts = {}
+        self.isFavicon = False;
 
     def addLine(self, strline):
-        if strline.startswith("GET /?"):
+        if strline.startswith("GET /favicon.ico HTTP/1.1"):
+            self.isFavicon = True;
+        elif strline.startswith("GET /?"):
             messageEnd = strline.find(" HTTP/1.1")
             allGetStuff = strline[6:messageEnd]; #skip GET /?
             print(allGetStuff)
@@ -24,3 +27,6 @@ class HTTPGet:
 
     def get(self, name):
         return self.allThemParts.get(name)
+
+    def hasFavicon(self):
+        return self.isFavicon;

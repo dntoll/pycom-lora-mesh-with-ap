@@ -23,9 +23,12 @@ class WebClientController:
         elif self.view.userAddsClient():
             client = self.view.getClient();
             self.meshNetworkState.setClient(client)
-            #self.view.sendClientsJSON(connection)
+            #What should be the response?
+            self.view.sendNeigborsJSON(connection)
 
         elif self.view.userPollsNetwork():
             self.view.sendNeigborsJSON(connection)
+        elif self.view.browserAskForFavicon():
+            self.view.sendFavicon(connection)
         else:
             self.view.sendIndexPageHTML(connection)

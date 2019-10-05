@@ -30,10 +30,10 @@ function HTMLView(model) {
 */
 
 
-var inputElements = ["phoneID", "nameID", "passfraseID"];
-var myRSAKey = "";
+//var inputElements = ["phoneID", "nameID", "passfraseID"];
+//var myRSAKey = "";
 
-function storePersonalInformation() {
+/*function storePersonalInformation() {
   for (const variable of inputElements) {
     var inputElement= document.getElementById(variable);
     localStorage.setItem(variable, inputElement.value);
@@ -81,7 +81,7 @@ function setRSAKeyHTML(myRSAKey) {
 //AJAX COMPLETED EVENT LISTENERS
 function onError(xhr, ajaxOptions, thrownError) {
 		console.log("onError", xhr, ajaxOptions, thrownError);
-}
+}*/
 
 function onDownloadedMessages(something) {
   var messagesDiv= document.getElementById("messages");
