@@ -5,6 +5,13 @@ function Controller(model, view) {
     model.updatePersonalInformation(pi, view);
     view.personalInformationWasUpdated();
   }
+
+  this.userSendsMessage = function() {
+    let m = view.getMessage();
+    model.sendMessage(m, view);
+
+
+  }
 }
 
 let m = new Model();
@@ -17,4 +24,7 @@ window.onload = function() {
 
 }
 
-window.setInterval(function(){m.onTick();}, 11000);
+window.setInterval( function() {
+                      m.onTick();
+                      v.updateView();
+                    }, 11000);

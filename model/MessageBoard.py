@@ -45,7 +45,7 @@ class MessageBoard:
         newSendDictionary = {}
         for hash, sent in self.toBeSent.items():
             if message.isAccForMessage(sent) == False:
-                newSendList[hash] = sent #We "remove messages" being acced by adding all others to the new send list
+                newSendDictionary[hash] = sent #We "remove messages" being acced by adding all others to the new send list
             else:
                 self.sent[hash] =sent
 

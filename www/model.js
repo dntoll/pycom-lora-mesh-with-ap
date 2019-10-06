@@ -1,3 +1,5 @@
+
+
 function API() {
   this.updatePersonalInformation = function(personalInformation, observer) {
     $.ajax({
@@ -23,6 +25,26 @@ function API() {
     }.bind(this));
   }
 
+  this.sendMessage = function(message, observer) {
+  	$.ajax({
+  	  url:  "?message=" + message.content + "&target=" + message.target + "&time="+ message.time,
+  	  context: this,
+  	  error: this.onError
+  	}).done(function( data ) {
+      this.onMessagesUpdate(data, observer);
+    }.bind(this));
+  }
+
+  this.updateNetwork = function(observer) {
+  	$.ajax({
+  	  url:  "?network=update",
+  	  context: this,
+  	   error: this.onError
+  	}).done(function( data ) {
+      this.onNeighborsUpdate(data, observer);
+    }.bind(this));
+  }
+
   this.onError = function(xhr, ajaxOptions, thrownError) {
     console.log("API.onError". xhr, ajaxOptions, thrownError);
   }
@@ -44,12 +66,31 @@ function API() {
     }
     return ret;
   }
+
   this.parseMessage = function(pyMessage) {
     return new Message(pyMessage.sender, pyMessage.target, pyMessage.content, pyMessage.time, pyMessage.isACK, pyMessage.isSelfInformation, pyMessage.sendCount)
   }
 
-  this.onNeighborsUpdate = function(response) {
-    console.log(response);
+  this.onNeighborsUpdate = function(neighborsJSON, observer) {
+    let obj = JSON.parse(neighborsJSON);
+
+    let me = this.parseNetworkNode(obj["me"])
+    let others = this.parseNetworkNodeList(obj["others"])
+
+    observer.updateNeighbors(me, others);
+  }
+
+  this.parseNetworkNodeList = function(pyArray) {
+    let ret = new Array();
+    for (const message of pyArray) {
+      ret.push(this.parseNetworkNode(message));
+    }
+    return ret;
+
+  }
+
+  this.parseNetworkNode = function(pyNeightbor) {
+    return new NetworkNode(pyNeightbor.mac, pyNeightbor.ip, pyNeightbor.name, pyNeightbor.mlEID, pyNeightbor.role, pyNeightbor.rssi, pyNeightbor.age, pyNeightbor.id, pyNeightbor.path_cost, pyNeightbor.firmware, pyNeightbor.clients)
   }
 }
 
@@ -76,13 +117,21 @@ function Model() {
   let api = new API();
   let persistance = new LocalPersistance();
 
+  this.toBeSent = new MessageList();
+  this.sent = new MessageList();
+  this.received = new MessageList();
+  this.others = [];
+  this.me = new NetworkNode();
+
   this.onLoad = function() {
     this.personalInformation = persistance.getStoredPersonalInformation();
     api.updateMessages(this);
+    api.updateNetwork(this);
   }
 
   this.onTick = function() {
     api.updateMessages(this);
+    api.updateNetwork(this);
   }
 
   this.updatePersonalInformation = function(personalInformation, observer) {
@@ -91,10 +140,19 @@ function Model() {
     api.updatePersonalInformation(this.personalInformation, observer);
   }
 
+  this.sendMessage = function(message, observer) {
+    api.sendMessage(message, observer);
+  }
+
   this.updateMessages = function(toBeSent, sent, received) {
     this.toBeSent = toBeSent;
     this.sent = sent;
     this.received = received;
+  }
+
+  this.updateNeighbors = function(me, others) {
+    this.me = me;
+    this.others = others;
   }
 }
 
@@ -125,4 +183,18 @@ function MessageList () {
   this.push = function(message) {
     this.messages.push(message)
   }
+}
+
+function NetworkNode(mac, ip, name, mlEID, role, rssi, age, id, path_cost, firmware, clients) {
+  this.mac = mac;
+  this.ip = ip;
+  this.name = name;
+  this.mlEID = mlEID;
+  this.role = role;
+  this.rssi = rssi;
+  this.age = age;
+  this.id =  id;
+  this.path_cost = path_cost;
+  this.firmware = firmware;
+  this.clients =clients;
 }

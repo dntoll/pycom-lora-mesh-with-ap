@@ -36,6 +36,69 @@ class MeshNetworkState:
             allNodes.remove("0")
         return allNodes
 
+    def getMyNodFullInformation(self):
+        return self.getNodeCompleteInfo(self.me.getMac())
+
+    def getOthersAsFullInformationList(self):
+        allNodes = self.getAllNodesMacs()
+        ret = []
+        for mac in allNodes:
+            ret.append(self.getNodeCompleteInfo(mac))
+        return ret
+
+    def getNodeCompleteInfo(self, mac):
+
+        ip = "no info"
+        name = "no info"
+        mlEID = "no info"
+        role = "no info"
+        rssi = "no info"
+        age = "no info"
+        id = "no info"
+        path_cost = "no info"
+        firmware = "not set"
+        clients = []
+
+        if self.me.mac == str(mac):
+            ip = self.me.ip
+            role = self.me.role
+            name = self.selfDecoration.name
+            mlEID = self.selfDecoration.mlEID
+            firmware = self.selfDecoration.firmware
+            clients = self.selfDecoration.clientsConnectedAtMySite
+        else:
+            if mac in self.neighbors:
+                node = self.neighbors[mac]
+                ip = node.ip
+                role = node.role
+                rssi = node.rssi
+                age = node.age
+            if mac in self.others:
+                node = self.others[mac]
+                name = node.name
+                mlEID = node.mlEID
+                firmware = node.firmware
+                clients = node.clientsConnectedAtMySite
+            if mac in self.routers:
+                node = self.routers[mac]
+                age = node.age
+                id = node.id
+                path_cost = node.path_cost
+        ret = {
+            "mac" : mac,
+            "ip" : ip,
+            "name" : name,
+            "mlEID" : mlEID,
+            "role" : role,
+            "rssi" : rssi,
+            "age" : age,
+            "id" : id,
+            "path_cost" : path_cost,
+            "firmware" : firmware,
+            "clients" : clients
+        }
+        return ret;
+
     def setSelfInfo(self, newIP, mac, role, rloc):
         self.me = NetworkNode(newIP, mac, role, rloc, 0, 0, 0, 0)
         self.selfDecoration.mlEID = newIP
@@ -60,14 +123,12 @@ class MeshNetworkState:
             raise Exception("this address has no receiver");
 
     def isDirectedToMe(self, targetAddress):
-
         if targetAddress == self.me.mac:
             return True
         return False
 
     def updateOthersDecorations(self, otherDecorationMessage):
         info = NetworkNodeDecoration.fromString(otherDecorationMessage.content)
-
         self.others[str(info.mac)] = info
 
 

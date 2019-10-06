@@ -81,7 +81,7 @@ function setRSAKeyHTML(myRSAKey) {
 //AJAX COMPLETED EVENT LISTENERS
 function onError(xhr, ajaxOptions, thrownError) {
 		console.log("onError", xhr, ajaxOptions, thrownError);
-}*/
+}
 
 function onDownloadedMessages(something) {
   var messagesDiv= document.getElementById("messages");
@@ -136,14 +136,11 @@ function getMessageHTML(message) {
   messageHTML += "<td>" + message.sendCount + "</td>"
 
   return messageHTML
-}
+}*/
 
-function onDownloadedNetwork(something) {
-  var networkDiv= document.getElementById("network");
-  networkDiv.innerHTML = something
-}
 
-function onUploadedMessages(something) {
+
+/*function onUploadedMessages(something) {
   var messageElement= document.getElementById("messageID");
   messageElement.value = "";
   onDownloadedMessages(something)
@@ -192,15 +189,15 @@ function updateNetwork() {
 window.setInterval(function(){
   updateMessages();
 }, 5000);
-
+*/
 window.setInterval(function(){
   updateNetwork();
 }, 10000);
 
 window.onload = function() {
-  loadPersonalInformation();
+  //loadPersonalInformation();
   updateNetwork();
-  updateMessages();
+  //updateMessages();
 };
 
 //interface för din egen session men som lagras på klienten

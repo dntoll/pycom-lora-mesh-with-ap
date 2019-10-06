@@ -26,7 +26,7 @@ from builtins import int
 
 def receive_pack(tuple):
     try:
-        print("receive_pack:" + repr(tuple))
+        #print("receive_pack:" + repr(tuple))
         sockets, messageBoard = tuple
         #print("receive_pack called")
         # listen for incomming packets
@@ -97,11 +97,11 @@ class LoraMeshAdapter:
                 try:
                     theContent = message.toString();
                     ipTarget = self.meshNetworkState.getIPFromMac(message.target)
-                    self.s.sendto(theContent, (ipTarget, self.myport))
+                    self.s.sendto(theContent, (str(ipTarget), self.myport))
                     print('Sent message to ' + message.target + " : " + ipTarget) #, repr(theContent)))
                 except NoRecipientException as nre:
                     print("Could not send message to " + repr(message.target) + " since no ip was found...")
                 except Exception as e:
                     print("something went wrong when sending message " + repr(e))
-                    #raise e
+                    raise e
             self.messageBoard.sendCompleted() #remove accs etc..

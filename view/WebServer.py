@@ -19,7 +19,7 @@ class WebServer:
             try:
                 #print('Listen for incomming socket connections')
                 cl, addr = s.accept()
-                print('client connected from', addr)
+                #print('client connected from', addr)
                 cl_file = cl.makefile()
                 response = this.webClientController.handleRequest(cl_file, addr, cl);
 
