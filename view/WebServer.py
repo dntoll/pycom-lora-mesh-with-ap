@@ -1,4 +1,5 @@
 import socket
+import ssl
 import _thread
 
 class WebServer:
@@ -7,6 +8,7 @@ class WebServer:
     def __init__(self, webClientController):
         addr = socket.getaddrinfo('0.0.0.0', 80)[0][-1]
         self.s = socket.socket()
+        #self.s = ssl.wrap_socket(self.s)
         self.s.bind(addr)
         self.s.listen(1)
         _thread.start_new_thread(WebServer.handleAccept, (self.s, self))

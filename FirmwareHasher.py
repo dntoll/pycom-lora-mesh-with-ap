@@ -16,5 +16,5 @@ class FirmwareHasher:
                 contents = f.read()
                 hasher.update(contents);
                 f.close()
-
-        return ubinascii.hexlify(hasher.digest()).decode()[1:8]
+        firmware = os.uname()
+        return os.uname().release + "." +ubinascii.hexlify(hasher.digest()).decode()[1:8]

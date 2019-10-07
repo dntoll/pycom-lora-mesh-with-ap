@@ -31,7 +31,7 @@ def receive_pack(tuple):
         #print("receive_pack called")
         # listen for incomming packets
         for s in sockets:
-            rcv_data, rcv_addr = s.recvfrom(512)
+            rcv_data, rcv_addr = s.recvfrom(4096)
             if len(rcv_data) == 0:
                 break
             rcv_ip = rcv_addr[0]
@@ -40,7 +40,7 @@ def receive_pack(tuple):
             strData = rcv_data.decode();
             message = Message.fromString(strData)
             messageBoard.receiveMessage(message)
-            print("Received message from " + str(message.getSender()))
+            print("Received message from " + str(message.getSender()) + " " + str(message.type))
 
     except Exception as e:
         print("something went wrong in receive_pack " + repr(tuple))
@@ -98,7 +98,7 @@ class LoraMeshAdapter:
                     theContent = message.toString();
                     ipTarget = self.meshNetworkState.getIPFromMac(message.target)
                     self.s.sendto(theContent, (str(ipTarget), self.myport))
-                    print('Sent message to ' + message.target + " : " + ipTarget) #, repr(theContent)))
+                    print('Sent message to ' + message.target + " : " + ipTarget + " " + str(message.type)) #, repr(theContent)))
                 except NoRecipientException as nre:
                     print("Could not send message to " + repr(message.target) + " since no ip was found...")
                 except Exception as e:

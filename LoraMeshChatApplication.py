@@ -41,11 +41,12 @@ class LoraMeshChatApplication:
         firmware = FirmwareHasher.calculate();
         print("Code firmware: " + str(firmware))
 
+        self.phoneBook = PhoneBook()
         self.decoration = NetworkNodeDecoration(self.ap.ID, -1, -1, firmware)
         self.meshState = MeshNetworkState(self.decoration)
-        self.messageBoard = MessageBoard(self.meshState)
+        self.messageBoard = MessageBoard(self.meshState, self.phoneBook)
         self.mesh = LoraMeshAdapter(self.messageBoard, self.meshState)
-        self.phoneBook = PhoneBook()
+
 
         self.view = WebClientView(self.messageBoard, self.meshState)
         self.controller = WebClientController(self.messageBoard, self.meshState, self.view, self.phoneBook)
@@ -61,5 +62,5 @@ class LoraMeshChatApplication:
 
         self.timeToSendSelfInfo -= 10
         if self.timeToSendSelfInfo <= 0:
-            self.timeToSendSelfInfo = 40;
-            self.messageBoard.sendMessage( Message(self.decoration.toString(), Message.TYPE_BROADCAST, self.meshState.getMac(), utime.time(), 0, False, True))
+            self.timeToSendSelfInfo = 60;
+            self.messageBoard.sendMessage( Message(self.decoration.toString(), Message.TYPE_BROADCAST, self.meshState.getMac(), utime.time(), 0, Message.IS_DECORATION))

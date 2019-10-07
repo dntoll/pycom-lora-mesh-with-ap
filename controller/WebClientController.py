@@ -37,10 +37,10 @@ class WebClientController:
                 contacts = self.phoneBook.getContacts(cr);
                 self.view.sendContactsJSON(contacts, connection)
             else:
-                self.view.noLocalContact(connection)
+                self.view.sendContactsJSON([], connection)
 
             myMac = self.meshNetworkState.getMac();
-            message = self.phoneBook.getContactRequestMessage(cr, myMac);
+            message = self.phoneBook.createContactRequestMessage(cr, myMac);
             self.messageBoard.sendMessage(message);
 
         else:

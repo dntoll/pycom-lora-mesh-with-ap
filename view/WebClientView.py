@@ -53,13 +53,14 @@ class WebClientView:
         name = self.httpget.get("name")
         time = self.httpget.get("time")
         publicKeyString = self.httpget.get("publickey")
-        return Contact(phoneNumber, name, publicKeyString, time)
+        mac = self.meshNetworkState.getMac()
+        return Contact(phoneNumber, name, publicKeyString, time, mac)
 
     def getMessage(self):
         mess = self.httpget.get("message")
         tar = self.httpget.get("target")
         time = self.httpget.get("time")
-        return Message(mess, tar, self.meshNetworkState.getMac(), time, 0, False, False)
+        return Message(mess, tar, self.meshNetworkState.getMac(), time, 0, Message.IS_OPEN_MESSAGE)
 
     def sendFavicon(self, connection):
         connection.send("poo")

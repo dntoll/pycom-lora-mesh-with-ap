@@ -27,7 +27,7 @@ function View(model) {
 
     var d = new Date();
     let time = d.getTime();
-    return new Message("setByServer", target, content, time, false, false, 0)
+    return new Message("setByServer", target, content, time, 0, 0)
   }
 
   this.getContactRequest = function() {
@@ -118,6 +118,7 @@ function View(model) {
               <th>phoneNumber</th>
               <th>publicKeyString</th>
               <th>time</th>
+              <th>lastSeenMac</th>
             </tr>`
   }
 
@@ -127,6 +128,7 @@ function View(model) {
     html += "<td>" + contact.phoneNumber + "</td>"
     html += "<td>" + contact.publicKeyString + "</td>"
     html += "<td>" + contact.time + "</td>"
+    html += "<td>" + contact.lastSeenMac + "</td>"
 
     return html
   }
@@ -167,8 +169,7 @@ function View(model) {
               <th>To</th>
               <th>Content</th>
               <th>Time</th>
-              <th>isACK</th>
-              <th>isSelfInformation</th>
+              <th>type</th>
               <th>sendCount</th>
             </tr>`
   }
@@ -179,8 +180,7 @@ function View(model) {
     html += "<td>" + message.target + "</td>"
     html += "<td>" + message.content + "</td>"
     html += "<td>" + message.time + "</td>"
-    html += "<td>" + message.isACK + "</td>"
-    html += "<td>" + message.isSelfInformation + "</td>"
+    html += "<td>" + message.type + "</td>"
     html += "<td>" + message.sendCount + "</td>"
 
     return html

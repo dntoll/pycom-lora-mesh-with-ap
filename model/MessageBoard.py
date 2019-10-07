@@ -11,31 +11,42 @@
 __version__ = '1'
 
 from model.Message import Message
+from model.ContactRequest import ContactRequest
 
 class MessageBoard:
-    def __init__(self, meshState):
+    def __init__(self, meshState, phoneBook):
         self.received = {}
         self.toBeSent = {}
         self.sent = {}
         self.meshState = meshState
+        self.phoneBook = phoneBook;
 
     def sendMessage(self, message):
         messageHash = message.getUniqueID();
 
         self.toBeSent[messageHash] = message
 
+    #Move this to the controller!
     def receiveMessage(self, message):
 
         messageHash = message.getUniqueID();
         #we only care about our own messages or broadcasts
         if self.meshState.isDirectedToMe(message.target):
-            if message.isACK:
+            if message.isACK():
                 self._receivedAccMessageForMe(message);
+            elif message.isContactFound():
+                self.phoneBook.contactsFound(message)
             else:
                 self.sendAcc(message)
                 self.received[messageHash] = message
         elif message.isBroadCast():
-            if message.isDecoration():
+            if message.isContactSearch():
+                cr = ContactRequest.fromString(message.content)
+                if self.phoneBook.hasContact(cr):
+                    crm = self.phoneBook.createContactsFoundMessage(cr, message, self.meshState.getMac());
+                    self.sendMessage(crm)
+
+            elif message.isDecoration():
                 self.meshState.updateOthersDecorations(message)
             else:
                 self.received[messageHash] = message
@@ -94,5 +105,5 @@ class MessageBoard:
 
     def sendAcc(self, message):
         #note sender and target swapped places here...
-        accMessage = Message(message.content, message.sender, message.target, message.time, 0, True, False);
+        accMessage = Message(message.content, message.sender, message.target, message.time, 0, Message.IS_ACK);
         self.sendMessage(accMessage)

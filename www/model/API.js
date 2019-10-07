@@ -53,7 +53,7 @@ this.searchForContact = function(contactRequest, contactResultTarget) {
 
     let ret = [];
     for (const contact of pyMatchedContacts) {
-      ret.push( new Contact(contact.name, contact.phoneNumber, contact.publicKeyString, contact.time ) )
+      ret.push( new Contact(contact.name, contact.phoneNumber, contact.publicKeyString, contact.time, contact.lastSeenMac ) )
     }
     contactResultTarget.setContactSearchResult(ret)
 
@@ -85,7 +85,7 @@ this.searchForContact = function(contactRequest, contactResultTarget) {
   }
 
   this.parseMessage = function(pyMessage) {
-    return new Message(pyMessage.sender, pyMessage.target, pyMessage.content, pyMessage.time, pyMessage.isACK, pyMessage.isSelfInformation, pyMessage.sendCount)
+    return new Message(pyMessage.sender, pyMessage.target, pyMessage.content, pyMessage.time, pyMessage.type, pyMessage.sendCount)
   }
 
   this.onNeighborsUpdate = function(neighborsJSON, observer) {

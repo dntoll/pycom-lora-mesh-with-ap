@@ -17,8 +17,15 @@ import uhashlib
 class Message:
     #https://openthread.io/guides/thread-primer/ipv6-addressing#multicast
     TYPE_BROADCAST = "ff03::1";
+    IS_ACK = 1
+    IS_DECORATION = 2
+    IS_CONTACT_SEARCH = 3
+    IS_OPEN_MESSAGE = 4
+    IS_ENCRYPTED_MESSAGE = 5
+    IS_CONTACT_FOUND = 6
 
-    def __init__(self, content, target, sender, time, sendCount, isAck, isDecoration):
+
+    def __init__(self, content, target, sender, time, sendCount, type):
         self.content = content
         self.target = target
         self.sender = sender
@@ -26,8 +33,7 @@ class Message:
 
         #Meta information
         self.sendCount = sendCount
-        self.isACK = isAck
-        self.isSelfInformation = isDecoration
+        self.type = type
 
     def getUniqueID(self):
         hasher = uhashlib.md5(str(self.content) + str(self.target) + str(self.sender) + str(self.time))
@@ -45,13 +51,23 @@ class Message:
         return self.target == Message.TYPE_BROADCAST
 
     def isDecoration(self):
-        return self.isSelfInformation
+        return self.type == Message.IS_DECORATION
+
+    def isACK(self):
+        return self.type == Message.IS_ACK
+
+    def isContactSearch(self):
+        return self.type == Message.IS_CONTACT_SEARCH
+
+    def isContactFound(self):
+        return self.type == Message.IS_CONTACT_FOUND
+
 
     def doSend(self):
         self.sendCount = self.sendCount + 1
 
     def toString(self):
-        tuple = [self.content, self.target, self.sender, self.time, self.sendCount, self.isACK, self.isSelfInformation]
+        tuple = [self.content, self.target, self.sender, self.time, self.sendCount, self.type]
         return ubinascii.b2a_base64(json.dumps(tuple))
 
     def toDictionary(self):
@@ -60,8 +76,7 @@ class Message:
             "target" : self.target,
             "sender" : self.sender,
             "sendCount" : self.sendCount,
-            "isACK" : self.isACK,
-            "isSelfInformation" : self.isSelfInformation,
+            "type" : self.type,
             "time" : self.time
         }
         return dict
@@ -70,8 +85,8 @@ class Message:
 
         rawText = ubinascii.a2b_base64(strData)
         tuple = json.loads(rawText);
-        content, target, sender, time, sendCount, isACK, isSelfInformation = tuple
-        message = Message(content, target, sender, time, sendCount, isACK, isSelfInformation)
+        content, target, sender, time, sendCount, type = tuple
+        message = Message(content, target, sender, time, sendCount, type)
 
         return message
 
