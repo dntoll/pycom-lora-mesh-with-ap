@@ -30,6 +30,15 @@ function View(model) {
     return new Message("setByServer", target, content, time, false, false, 0)
   }
 
+  this.getContactRequest = function() {
+    var cname= document.getElementById("contactName");
+    var cphone= document.getElementById("contactPhone");
+    let name = cname.value;
+    let phone = cphone.value;
+
+    return new ContactRequest(name, phone);
+  }
+
   this.personalInformationWasUpdated = function() {
     let publickey = model.personalInformation.publicKey;
     var RSAPublicKeyElement= document.getElementById(RSAPublicKeyID);
@@ -41,6 +50,20 @@ function View(model) {
   this.updateView = function() {
     this.updateMessages();
     this.updateNeighbors();
+  }
+
+  this.setContactSearchResult = function(searchResultContactArray) {
+    html = "";
+
+    html += "<table>";
+    html += this.getContactHeader()
+    for (const contact of searchResultContactArray) {
+      html += "<tr>" +  this.getContactHTML(contact)  + " </tr>"
+    }
+    html +=  "</table>"
+
+    var networkDiv= document.getElementById("contactSearchResult");
+    networkDiv.innerHTML = html;
   }
 
   this.updateNeighbors = function() {
@@ -64,14 +87,14 @@ function View(model) {
 
     messageBoardHTML = "<h2>Received Messages</h2>"
     messageBoardHTML += "<table>" + this.getMessageHeader()
-    for (const message of model.received.messages) {
+    for (const message of model.received) {
       messageBoardHTML += "<tr>" +  this.getMessageHTML(message)  + " </tr>"
     }
     messageBoardHTML +=  "</table>"
 
     messageBoardHTML += "<h2>Send Que</h2>"
     messageBoardHTML += "<table>" + this.getMessageHeader()
-    for (const message of model.toBeSent.messages) {
+    for (const message of model.toBeSent) {
       messageBoardHTML += "<tr>" +  this.getMessageHTML(message)  + " </tr>"
     }
     messageBoardHTML = messageBoardHTML + "</table>"
@@ -79,7 +102,7 @@ function View(model) {
     messageBoardHTML += "<h2>Sent Messages</h2>"
     messageBoardHTML += "<table>" + this.getMessageHeader()
 
-    for (const message of model.sent.messages) {
+    for (const message of model.sent) {
       messageBoardHTML += "<tr>" +  this.getMessageHTML(message)  + " </tr>"
     }
     messageBoardHTML = messageBoardHTML + "</table>"
@@ -89,6 +112,24 @@ function View(model) {
     messagesDiv.innerHTML = messageBoardHTML;
   }
 
+  this.getContactHeader = function() {
+    return `<tr>
+              <th>name</th>
+              <th>phoneNumber</th>
+              <th>publicKeyString</th>
+              <th>time</th>
+            </tr>`
+  }
+
+  this.getContactHTML = function(contact) {
+    html = ""
+    html += "<td>" + contact.name + "</td>"
+    html += "<td>" + contact.phoneNumber + "</td>"
+    html += "<td>" + contact.publicKeyString + "</td>"
+    html += "<td>" + contact.time + "</td>"
+
+    return html
+  }
 
 
   this.getNetworkNodeHeader = function() {

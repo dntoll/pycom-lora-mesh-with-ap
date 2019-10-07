@@ -46,10 +46,12 @@
 <fieldset>
  <legend>Search for contacts using phoneNumber or name</legend>
   <form method="get">
-  Name:   <input type='text' name='contactName' id=''><br/>
-  phoneNumber :<input type='text' name='contactPhone' id='' value=''>
-          <button type="button" onclick="">Search</button>
+  Name:   <input type='text' name='contactName' id='contactName'><br/>
+  phoneNumber :<input type='text' name='contactPhone' id='contactPhone' value=''>
+          <button type="button" onclick="c.searchForContact()">Search</button>
   </form>
+
+  <div id='contactSearchResult'></div>
 </fieldset>
 
 <fieldset>

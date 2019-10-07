@@ -15,6 +15,7 @@ import view
 
 from model.MessageBoard import MessageBoard
 from model.Message import Message
+from model.PhoneBook import PhoneBook
 from model.LoraMeshAdapter import LoraMeshAdapter
 from model.MeshNetworkState import MeshNetworkState
 from model.NetworkNodeDecoration import NetworkNodeDecoration
@@ -40,13 +41,14 @@ class LoraMeshChatApplication:
         firmware = FirmwareHasher.calculate();
         print("Code firmware: " + str(firmware))
 
-        self.decoration = NetworkNodeDecoration(self.ap.ID, -1, -1, firmware, {})
+        self.decoration = NetworkNodeDecoration(self.ap.ID, -1, -1, firmware)
         self.meshState = MeshNetworkState(self.decoration)
         self.messageBoard = MessageBoard(self.meshState)
         self.mesh = LoraMeshAdapter(self.messageBoard, self.meshState)
+        self.phoneBook = PhoneBook()
 
         self.view = WebClientView(self.messageBoard, self.meshState)
-        self.controller = WebClientController(self.messageBoard, self.meshState, self.view)
+        self.controller = WebClientController(self.messageBoard, self.meshState, self.view, self.phoneBook)
 
         self.www = WebServer(self.controller)
 

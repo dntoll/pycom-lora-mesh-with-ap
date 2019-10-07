@@ -1,9 +1,12 @@
 from model.Message import Message
-from model.Client import Client
+from model.Contact import Contact
+from model.ContactRequest import ContactRequest
+
 from unquote import unquote
 from view.HTTPGet import HTTPGet
 
 import ujson
+import os
 
 class WebClientView:
 
@@ -22,7 +25,7 @@ class WebClientView:
             self.httpget.addLine(strline);
             if not line or strline == '\r\n':
                 break
-    def userAddsClient(self):
+    def userAddsContact(self):
         return self.httpget.has("phoneNumber") and self.httpget.has("name") and self.httpget.has("time") and self.httpget.has("publickey")
 
     def userSendsMessage(self):
@@ -37,12 +40,20 @@ class WebClientView:
     def browserAskForFavicon(self):
         return self.httpget.hasFavicon();
 
-    def getClient(self):
+    def userSearchForContacts(self):
+        return self.httpget.has("contactPhone") and self.httpget.has("contactName")
+
+    def getContactRequest(self):
+        phone = self.httpget.get("contactPhone")
+        name = self.httpget.get("contactName")
+        return ContactRequest(name, phone);
+
+    def getContact(self):
         phoneNumber = self.httpget.get("phoneNumber")
         name = self.httpget.get("name")
         time = self.httpget.get("time")
         publicKeyString = self.httpget.get("publickey")
-        return Client(phoneNumber, name, publicKeyString, time)
+        return Contact(phoneNumber, name, publicKeyString, time)
 
     def getMessage(self):
         mess = self.httpget.get("message")
@@ -52,6 +63,15 @@ class WebClientView:
 
     def sendFavicon(self, connection):
         connection.send("poo")
+
+    def noLocalContact(self, connection):
+        connection.send("noLocalContact");
+
+    def sendContactsJSON(self, contacts, connection):
+        ret = ujson.dumps(contacts)
+        connection.send(ret)
+
+
 
     def sendIndexPageHTML(self, connection):
         #perhaps read and include all files from www/include?
@@ -65,9 +85,11 @@ class WebClientView:
         self.sendFile("www/jquery-3.4.1.min.js", connection)
         connection.send("</script><script t language=\"JavaScript\" type=\"text/javascript\" >")
         self.sendFile("www/cryptico.min.js", connection)
-        self.sendFile("www/model.js", connection)
-        self.sendFile("www/view.js", connection)
-        self.sendFile("www/controller.js", connection)
+
+        self.sendFiles("www/model", connection)
+        self.sendFiles("www/view", connection)
+        self.sendFiles("www/controller", connection)
+
         connection.send( "</script><style>")
         self.sendFile("www/style.css", connection)
         connection.send("</style> <body>");
@@ -79,6 +101,13 @@ class WebClientView:
         connection.send(f.read())
         f.close();
 
+    def sendFiles(self, path, connection):
+
+        files = os.listdir(path)
+        for file in files:
+            if file.endswith('.js'):
+                print(file)
+                self.sendFile(path + "/"+ file, connection)
 
     def sendMessagesJSON(self, connection):
         dict = {

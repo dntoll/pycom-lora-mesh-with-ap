@@ -9,8 +9,11 @@ function Controller(model, view) {
   this.userSendsMessage = function() {
     let m = view.getMessage();
     model.sendMessage(m, view);
+  }
 
-
+  this.searchForContact = function() {
+    let cr = view.getContactRequest();
+    model.searchForContact(cr, view)
   }
 }
 

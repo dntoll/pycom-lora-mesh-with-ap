@@ -65,7 +65,6 @@ class MeshNetworkState:
             name = self.selfDecoration.name
             mlEID = self.selfDecoration.mlEID
             firmware = self.selfDecoration.firmware
-            clients = self.selfDecoration.clientsConnectedAtMySite
         else:
             if mac in self.neighbors:
                 node = self.neighbors[mac]
@@ -78,7 +77,6 @@ class MeshNetworkState:
                 name = node.name
                 mlEID = node.mlEID
                 firmware = node.firmware
-                clients = node.clientsConnectedAtMySite
             if mac in self.routers:
                 node = self.routers[mac]
                 age = node.age
@@ -95,7 +93,6 @@ class MeshNetworkState:
             "id" : id,
             "path_cost" : path_cost,
             "firmware" : firmware,
-            "clients" : clients
         }
         return ret;
 
@@ -103,9 +100,6 @@ class MeshNetworkState:
         self.me = NetworkNode(newIP, mac, role, rloc, 0, 0, 0, 0)
         self.selfDecoration.mlEID = newIP
         self.selfDecoration.mac = mac
-
-    def setClient(self, client):
-        self.selfDecoration.clientsConnectedAtMySite[client.phoneNumber] = client
 
     def getMac(self):
         return self.me.getMac()

@@ -22,6 +22,7 @@ class WifiAP:
         print("My ssid:")
         print(self.ID);
 
+    def connect(self):
         self.wlan = WLAN()
         self.wlan.init(mode=WLAN.STA)
         nets = self.wlan.scan()
