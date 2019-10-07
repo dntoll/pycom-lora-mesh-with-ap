@@ -106,12 +106,16 @@ class MeshNetworkState:
 
     def getIPFromMac(self, mac):
         if mac == self.me.mac:
+            print("using my ip")
             return self.me.ip
-        elif mac in self.neighbors:
-            return self.neighbors[mac].rloc16
         elif mac in self.others:
+            print("using others mlEID")
             return self.others[mac].mlEID
+        elif mac in self.neighbors:
+            print("using neighbors rloc16")
+            return self.neighbors[mac].rloc16
         elif mac == Message.TYPE_BROADCAST:
+            print("using TYPE_BROADCAST")
             return Message.TYPE_BROADCAST
         else:
             raise Exception("this address has no receiver");

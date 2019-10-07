@@ -102,6 +102,8 @@ class LoraMeshAdapter:
                 except NoRecipientException as nre:
                     print("Could not send message to " + repr(message.target) + " since no ip was found...")
                 except Exception as e:
-                    print("something went wrong when sending message " + repr(e))
+                    print("something went wrong when sending message " + repr(e) + " " + str(len(message.toString())))
+                    ipTarget = self.meshNetworkState.getIPFromMac(message.target)
+                    print('Tried to send message to ' + message.target + " " + str(ipTarget));
                     raise e
             self.messageBoard.sendCompleted() #remove accs etc..
