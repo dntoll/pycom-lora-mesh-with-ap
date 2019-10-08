@@ -14,23 +14,29 @@ class WebClientController:
 
         #Send Message Action
         if self.view.userSendsMessage():
+            print("userSendsMessage");
             message = self.view.getMessage()
             self.messageBoard.sendMessage(message)
             self.view.sendMessagesJSON(connection)
 
         elif self.view.userPollsMessages():
+            print("userPollsMessages");
             self.view.sendMessagesJSON(connection)
 
         elif self.view.userAddsContact():
+            print("userAddsContact");
             client = self.view.getContact();
             self.phoneBook.updateContact(client);
             self.view.sendNeigborsJSON(connection)
 
         elif self.view.userPollsNetwork():
+            print("userPollsNetwork");
             self.view.sendNeigborsJSON(connection)
         elif self.view.browserAskForFavicon():
+            print("browserAskForFavicon");
             self.view.sendFavicon(connection)
         elif self.view.userSearchForContacts():
+            print("userSearchForContacts");
             cr = self.view.getContactRequest();
             if self.phoneBook.hasContact(cr):
                 #Note there may be more than one match...
@@ -39,9 +45,10 @@ class WebClientController:
             else:
                 self.view.sendContactsJSON([], connection)
 
-            myMac = self.meshNetworkState.getMac();
-            message = self.phoneBook.createContactRequestMessage(cr, myMac);
-            self.messageBoard.sendMessage(message);
+            if self.view.onlyDoLocalSearch() == False:
+                myMac = self.meshNetworkState.getMac();
+                message = self.phoneBook.createContactRequestMessage(cr, myMac);
+                self.messageBoard.sendMessage(message);
 
         else:
             self.view.sendIndexPageHTML(connection)

@@ -28,6 +28,6 @@ window.onload = function() {
 }
 
 window.setInterval( function() {
-                      m.onTick();
+                      m.onTick(v);
                       v.updateView();
                     }, 11000);

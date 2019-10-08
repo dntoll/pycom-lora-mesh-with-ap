@@ -25,6 +25,7 @@ class WebServer:
                 cl_file = cl.makefile()
                 response = this.webClientController.handleRequest(cl_file, addr, cl);
 
+
                 cl.close()
 
             except OSError as e:

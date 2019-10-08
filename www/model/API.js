@@ -42,9 +42,15 @@ function API() {
     }.bind(this));
   }
 
-this.searchForContact = function(contactRequest, contactResultTarget) {
+this.updateSearchResult = function(contactResultTarget) {
+  if (typeof this.lastContactRequest !== "undefined")
+    this.searchForContact(this.lastContactRequest, contactResultTarget, true)
+}
+
+this.searchForContact = function(contactRequest, contactResultTarget, checkLocally) {
+  this.lastContactRequest = contactRequest
   $.ajax({
-    url:  "?contactName=" + contactRequest.name + "&contactPhone=" + contactRequest.phone,
+    url:  "?contactName=" + contactRequest.name + "&contactPhone=" + contactRequest.phone + "&local=" + (checkLocally ? "true":"false"),
     context: this,
      error: this.onError
   }).done(function( contactResoponseJSONString ) {
@@ -56,8 +62,6 @@ this.searchForContact = function(contactRequest, contactResultTarget) {
       ret.push( new Contact(contact.name, contact.phoneNumber, contact.publicKeyString, contact.time, contact.lastSeenMac ) )
     }
     contactResultTarget.setContactSearchResult(ret)
-
-
   }.bind(this));
 }
 

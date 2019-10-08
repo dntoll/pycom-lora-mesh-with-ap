@@ -60,7 +60,7 @@ class LoraMeshChatApplication:
         #print("sleeping update")
         time.sleep(10)
 
-        self.timeToSendSelfInfo -= 10
-        if self.timeToSendSelfInfo <= 0:
+        self.timeToSendSelfInfo -= 1
+        if self.timeToSendSelfInfo <= 0 and len(self.meshState.routers) > 0:
             self.timeToSendSelfInfo = 60;
             self.messageBoard.sendMessage( Message(self.decoration.toString(), Message.TYPE_BROADCAST, self.meshState.getMac(), utime.time(), 0, Message.IS_DECORATION))

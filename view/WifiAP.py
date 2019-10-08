@@ -42,4 +42,5 @@ class WifiAP:
                 print("Did set up own AP ");
         except OSError:
             print("Failed To Setup Wifi")
-        print(self.wlan.ifconfig())
+        print(self.wlan.ifconfig(id=0))
+        print(self.wlan.ifconfig(id=1))

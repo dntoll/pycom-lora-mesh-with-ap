@@ -37,7 +37,10 @@ class PhoneBook:
         return Message(content, message.sender, myMac, 0,0, Message.IS_CONTACT_FOUND)
 
     def contactsFound(self, message):
+        print("contacts found message!")
         rawText = ubinascii.a2b_base64(message.content)
         arr = json.loads(rawText);
+        #print(arr)
         for contact in arr:
-            self.updateContact(Contact(contact.phoneNumber, contact.name, contact.publicKeyString, contact.time, contact.lastSeenMac))
+            print(contact)
+            self.updateContact(Contact(contact["phoneNumber"], contact["name"], contact["publicKeyString"], contact["time"], contact["lastSeenMac"]))
