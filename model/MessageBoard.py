@@ -36,6 +36,7 @@ class MessageBoard:
                 self._receivedAccMessageForMe(message);
             elif message.isContactFound():
                 self.phoneBook.contactsFound(message)
+                self.received[messageHash] = message
             else:
                 self.sendAcc(message)
                 self.received[messageHash] = message

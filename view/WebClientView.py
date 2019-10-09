@@ -41,7 +41,10 @@ class WebClientView:
         return self.httpget.hasFavicon();
 
     def userSearchForContacts(self):
-        return self.httpget.has("contactPhone") and self.httpget.has("contactName")
+        return self.httpget.has("contactPhone") and self.httpget.has("contactName") and self.httpget.has("local")
+
+    def onlyDoLocalSearch(self):
+        return self.httpget.get("local") == "true"
 
     def getContactRequest(self):
         phone = self.httpget.get("contactPhone")

@@ -43,8 +43,8 @@ def receive_pack(tuple):
             print("Received message from " + str(message.getSender()) + " " + str(message.type))
 
     except Exception as e:
-        print("something went wrong in receive_pack " + repr(tuple))
-        raise e
+        print("something went wrong in receive_pack " + repr(tuple) + repr(e))
+        #raise e
 
 
 class NoRecipientException(Exception):
@@ -105,5 +105,5 @@ class LoraMeshAdapter:
                     print("something went wrong when sending message " + repr(e) + " " + str(len(message.toString())))
                     ipTarget = self.meshNetworkState.getIPFromMac(message.target)
                     print('Tried to send message to ' + message.target + " " + str(ipTarget));
-                    raise e
+                    #raise e
             self.messageBoard.sendCompleted() #remove accs etc..

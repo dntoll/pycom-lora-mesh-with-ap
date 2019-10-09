@@ -18,9 +18,10 @@ function Model() {
     api.updateNetwork(this);
   }
 
-  this.onTick = function() {
+  this.onTick = function(updateObserver) {
     api.updateMessages(this);
     api.updateNetwork(this);
+    api.updateSearchResult(updateObserver);
   }
 
   this.updatePersonalInformation = function(personalInformation, observer) {
@@ -34,7 +35,7 @@ function Model() {
   }
 
   this.searchForContact = function(contactRequest, contactResultTarget) {
-    api.searchForContact(contactRequest, contactResultTarget)
+    api.searchForContact(contactRequest, contactResultTarget, false)
   }
 
   this.updateMessages = function(toBeSent, sent, received) {
