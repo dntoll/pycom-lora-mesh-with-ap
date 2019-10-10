@@ -16,7 +16,9 @@ class WebClientController:
         if self.view.userSendsMessage():
             print("userSendsMessage");
             message = self.view.getMessage()
+            self.messageBoard.lock()
             self.messageBoard.sendMessage(message)
+            self.messageBoard.unlock()
             self.view.sendMessagesJSON(connection)
 
         elif self.view.userPollsMessages():
@@ -46,9 +48,11 @@ class WebClientController:
                 self.view.sendContactsJSON([], connection)
 
             if self.view.onlyDoLocalSearch() == False:
-                myMac = self.meshNetworkState.getMac();
-                message = self.phoneBook.createContactRequestMessage(cr, myMac);
-                self.messageBoard.sendMessage(message);
+                myMac = self.meshNetworkState.getMac()
+                message = self.phoneBook.createContactRequestMessage(cr, myMac)
+                self.messageBoard.lock()
+                self.messageBoard.sendMessage(message)
+                self.messageBoard.unlock()
 
         else:
             self.view.sendIndexPageHTML(connection)

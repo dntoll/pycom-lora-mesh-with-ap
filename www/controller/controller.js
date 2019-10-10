@@ -15,6 +15,14 @@ function Controller(model, view) {
     let cr = view.getContactRequest();
     model.searchForContact(cr, view)
   }
+
+  this.addContactFromSearchResult = function(phoneNumber) {
+    for (const contact of view.searchResultContactArray) {
+      if (phoneNumber == contact.phoneNumber) {
+        alert("hej irma");
+      }
+    }
+  }
 }
 
 let m = new Model();

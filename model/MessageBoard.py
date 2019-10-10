@@ -10,6 +10,7 @@
 
 __version__ = '1'
 
+import _thread
 from model.Message import Message
 from model.ContactRequest import ContactRequest
 
@@ -19,16 +20,23 @@ class MessageBoard:
         self.toBeSent = {}
         self.sent = {}
         self.meshState = meshState
-        self.phoneBook = phoneBook;
+        self.phoneBook = phoneBook
+        self.myLock = _thread.allocate_lock()
+
+    def lock(self):
+        self.myLock.acquire()
+
+    def unlock(self):
+        self.myLock.release()
 
     def sendMessage(self, message):
         messageHash = message.getUniqueID();
 
         self.toBeSent[messageHash] = message
 
+
     #Move this to the controller!
     def receiveMessage(self, message):
-
         messageHash = message.getUniqueID();
         #we only care about our own messages or broadcasts
         if self.meshState.isDirectedToMe(message.target):
@@ -38,7 +46,7 @@ class MessageBoard:
                 self.phoneBook.contactsFound(message)
                 self.received[messageHash] = message
             else:
-                self.sendAcc(message)
+                self._sendAcc(message)
                 self.received[messageHash] = message
         elif message.isBroadCast():
             if message.isContactSearch():
@@ -51,6 +59,7 @@ class MessageBoard:
                 self.meshState.updateOthersDecorations(message)
             else:
                 self.received[messageHash] = message
+
 
     def _receivedAccMessageForMe(self, message):
         #messageHash = message.getUniqueID();
@@ -104,7 +113,7 @@ class MessageBoard:
             ret.append(message.toDictionary())
         return ret
 
-    def sendAcc(self, message):
+    def _sendAcc(self, message):
         #note sender and target swapped places here...
         accMessage = Message(message.content, message.sender, message.target, message.time, 0, Message.IS_ACK);
         self.sendMessage(accMessage)

@@ -39,7 +39,9 @@ def receive_pack(tuple):
 
             strData = rcv_data.decode();
             message = Message.fromString(strData)
+            self.messageBoard.lock();
             messageBoard.receiveMessage(message)
+            self.messageBoard.unlock();
             print("Received message from " + str(message.getSender()) + " " + str(message.type))
 
     except Exception as e:
@@ -92,6 +94,7 @@ class LoraMeshAdapter:
             neigbors = self.mesh.neighbors_ip()
             print("%d neighbors, IPv6 list: %s"%(len(neigbors), neigbors))
 
+            self.messageBoard.lock();
             for key, message in self.messageBoard.getMessagesToBeSent().items():
                 message.doSend();
                 try:
@@ -107,3 +110,4 @@ class LoraMeshAdapter:
                     print('Tried to send message to ' + message.target + " " + str(ipTarget));
                     #raise e
             self.messageBoard.sendCompleted() #remove accs etc..
+            self.messageBoard.unlock();

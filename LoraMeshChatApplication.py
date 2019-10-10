@@ -63,4 +63,6 @@ class LoraMeshChatApplication:
         self.timeToSendSelfInfo -= 1
         if self.timeToSendSelfInfo <= 0 and len(self.meshState.routers) > 0:
             self.timeToSendSelfInfo = 60;
+            self.messageBoard.lock()
             self.messageBoard.sendMessage( Message(self.decoration.toString(), Message.TYPE_BROADCAST, self.meshState.getMac(), utime.time(), 0, Message.IS_DECORATION))
+            self.messageBoard.unlock()

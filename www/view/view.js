@@ -53,12 +53,13 @@ function View(model) {
   }
 
   this.setContactSearchResult = function(searchResultContactArray) {
+    this.searchResultContactArray = searchResultContactArray;
     html = "";
 
     html += "<table>";
     html += this.getContactHeader()
     for (const contact of searchResultContactArray) {
-      html += "<tr>" +  this.getContactHTML(contact)  + " </tr>"
+      html += "<tr>" +  this.getContactHTML(contact)  + "<td><button type=\"button\" onclick=\"c.addContactFromSearchResult(\'"+contact.phoneNumber+"\')\">Send</button></td> </tr>"
     }
     html +=  "</table>"
 

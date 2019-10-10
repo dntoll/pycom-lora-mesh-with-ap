@@ -14,6 +14,7 @@ function Model() {
 
   this.onLoad = function() {
     this.personalInformation = persistance.getStoredPersonalInformation();
+    this.phoneBook = persistance.getStoredPhoneBook(); <<--- Det är här vi är
     api.updateMessages(this);
     api.updateNetwork(this);
   }
