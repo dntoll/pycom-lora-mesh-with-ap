@@ -1,8 +1,9 @@
 function LocalPersistance() {
-  let keyIndex = "LocalPersistance.storedPersonalInformation.2";
+  let personalInformationIndex = "LocalPersistance.storedPersonalInformation";
+  let phoneBookIndex = "LocalPersistance.storedPhoneBook2";
 
   this.getStoredPersonalInformation = function() {
-    let x = localStorage.getItem(keyIndex)
+    let x = localStorage.getItem(personalInformationIndex)
 
     if ( x === null)
       return new PersonalInformation("+4670...", "Not set", "Secret passfrase");
@@ -12,6 +13,23 @@ function LocalPersistance() {
   }
 
   this.storePersonalInformation = function(pi) {
-    localStorage.setItem(keyIndex, JSON.stringify(pi));
+    localStorage.setItem(personalInformationIndex, JSON.stringify(pi));
+  }
+
+  this.getStoredPhoneBook = function() {
+    let x = localStorage.getItem(phoneBookIndex)
+
+    let ret = new PhoneBook();
+    if ( x === null)
+      return ret;
+    else {
+       ret.contacts = JSON.parse(x);
+       return ret
+    }
+  }
+
+  this.storePhoneBook = function(phoneBook) {
+
+    localStorage.setItem(phoneBookIndex, JSON.stringify(phoneBook.contacts));
   }
 }

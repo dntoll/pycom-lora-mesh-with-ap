@@ -22,7 +22,7 @@ class WifiAP:
         print("My ssid:")
         print(self.ID);
         self.wlan = WLAN()
-        self.wlan.disconnect()
+        #self.wlan.disconnect()
         self.wlan.init(mode=WLAN.STA, antenna=WLAN.INT_ANT)
         found = False
         try:

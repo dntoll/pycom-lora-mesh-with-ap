@@ -1,13 +1,13 @@
-function Controller(model, view) {
+function Controller(model, view, adminView) {
   this.onSavePersonalInformation = function() {
 
     let pi = view.getPersonalInformation();
-    model.updatePersonalInformation(pi, view);
+    model.updatePersonalInformation(pi);
     view.personalInformationWasUpdated();
   }
 
   this.userSendsMessage = function() {
-    let m = view.getMessage();
+    let m = adminView.getMessage();
     model.sendMessage(m, view);
   }
 
@@ -19,14 +19,16 @@ function Controller(model, view) {
   this.addContactFromSearchResult = function(phoneNumber) {
     for (const contact of view.searchResultContactArray) {
       if (phoneNumber == contact.phoneNumber) {
-        alert("hej irma");
+        model.addContact(contact);
       }
     }
+    view.setContactList();
   }
 }
 
 let m = new Model();
 let v = new View(m);
+let av = new AdminView(m);
 let c = new Controller(m, v);
 
 window.onload = function() {
@@ -38,4 +40,5 @@ window.onload = function() {
 window.setInterval( function() {
                       m.onTick(v);
                       v.updateView();
+                      av.updateView();
                     }, 11000);

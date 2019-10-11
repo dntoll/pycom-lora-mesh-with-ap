@@ -14,7 +14,7 @@ function Model() {
 
   this.onLoad = function() {
     this.personalInformation = persistance.getStoredPersonalInformation();
-    this.phoneBook = persistance.getStoredPhoneBook(); <<--- Det är här vi är
+    this.phoneBook = persistance.getStoredPhoneBook()
     api.updateMessages(this);
     api.updateNetwork(this);
   }
@@ -29,6 +29,11 @@ function Model() {
     this.personalInformation = personalInformation;
     persistance.storePersonalInformation(this.personalInformation);
     api.updatePersonalInformation(this.personalInformation, observer);
+  }
+
+  this.addContact = function(contact) {
+    this.phoneBook.addContact(contact)
+    persistance.storePhoneBook(this.phoneBook)
   }
 
   this.sendMessage = function(message, observer) {
