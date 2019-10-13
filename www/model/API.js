@@ -1,14 +1,16 @@
 function API() {
   this.updatePersonalInformation = function(personalInformation, observer) {
+
+    let encoded = encodeURIComponent(personalInformation.publicKey)
     $.ajax({
-  	  url:  "?phoneNumber=" + personalInformation.phone +
-            "&name=" + personalInformation.name +
+  	  url:  "?phoneNumber=" + encodeURIComponent(personalInformation.phone) +
+            "&name=" + encodeURIComponent(personalInformation.name) +
             "&time="+ personalInformation.time +
-            "&publickey="+ personalInformation.publicKey,
+            "&publickey="+ encoded,
   	  context: this,
   	  error: this.onError
   	}).done(function( data ) {
-      this.onNeighborsUpdate(data, observer);
+      //this.onNeighborsUpdate(data, observer);
     }.bind(this));
   }
 
@@ -24,7 +26,7 @@ function API() {
 
   this.sendMessage = function(message, observer) {
   	$.ajax({
-  	  url:  "?message=" + message.content + "&target=" + message.target + "&time="+ message.time,
+  	  url:  "?message=" + encodeURIComponent(message.content) + "&target=" + message.target + "&time="+ message.time,
   	  context: this,
   	  error: this.onError
   	}).done(function( data ) {
@@ -50,7 +52,7 @@ this.updateSearchResult = function(contactResultTarget) {
 this.searchForContact = function(contactRequest, contactResultTarget, checkLocally) {
   this.lastContactRequest = contactRequest
   $.ajax({
-    url:  "?contactName=" + contactRequest.name + "&contactPhone=" + contactRequest.phone + "&local=" + (checkLocally ? "true":"false"),
+    url:  "?contactName=" + encodeURIComponent(contactRequest.name) + "&contactPhone=" + encodeURIComponent(contactRequest.phone) + "&local=" + (checkLocally ? "true":"false"),
     context: this,
      error: this.onError
   }).done(function( contactResoponseJSONString ) {
@@ -59,7 +61,7 @@ this.searchForContact = function(contactRequest, contactResultTarget, checkLocal
 
     let ret = [];
     for (const contact of pyMatchedContacts) {
-      ret.push( new Contact(contact.name, contact.phoneNumber, contact.publicKeyString, contact.time, contact.lastSeenMac ) )
+      ret.push( new Contact(decodeURIComponent(contact.name), decodeURIComponent(contact.phoneNumber), decodeURIComponent(contact.publicKeyString), contact.time, contact.lastSeenMac ) )
     }
     contactResultTarget.setContactSearchResult(ret)
   }.bind(this));
@@ -89,7 +91,7 @@ this.searchForContact = function(contactRequest, contactResultTarget, checkLocal
   }
 
   this.parseMessage = function(pyMessage) {
-    return new Message(pyMessage.sender, pyMessage.target, pyMessage.content, pyMessage.time, pyMessage.type, pyMessage.sendCount)
+    return new Message(pyMessage.sender, pyMessage.target, decodeURIComponent(pyMessage.content), pyMessage.time, pyMessage.type, pyMessage.sendCount)
   }
 
   this.onNeighborsUpdate = function(neighborsJSON, observer) {

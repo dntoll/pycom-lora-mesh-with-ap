@@ -32,6 +32,26 @@ function View(model) {
     return new ContactRequest(name, phone);
   }
 
+  this.messageContact = function(contact) {
+    var name= document.getElementById("sendMessageNameID");
+    var phone= document.getElementById("sendMessagePhoneID");
+    var publicKey= document.getElementById("sendMessagePublicKey");
+    var mac = document.getElementById("sendMessageMacID");
+    name.value = contact.name
+    phone.value = contact.phoneNumber
+    publicKey.value = contact.publicKeyString
+    mac.value = contact.lastSeenMac
+
+    this.contact = contact
+  }
+
+  this.getEncryptedMessage = function() {
+    var message= document.getElementById("sendMessageMessage").value;
+    return new EncryptedMessage(this.contact, message, model.personalInformation)
+  }
+
+
+
   this.personalInformationWasUpdated = function() {
     let publickey = model.personalInformation.publicKey;
     var RSAPublicKeyElement= document.getElementById(RSAPublicKeyID);

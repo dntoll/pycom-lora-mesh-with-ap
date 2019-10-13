@@ -3,6 +3,7 @@
 from model.Message import Message
 from model.NetworkNode import NetworkNode
 from model.NetworkNodeDecoration import NetworkNodeDecoration
+from model.NoRecipientException import NoRecipientException
 
 class MeshNetworkState:
 

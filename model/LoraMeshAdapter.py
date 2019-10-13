@@ -13,7 +13,7 @@ __version__ = '1'
 from loramesh import Loramesh
 from network import LoRa
 from model.Message import Message
-
+from model.NoRecipientException import NoRecipientException
 import ubinascii
 import binascii
 import pycom
@@ -39,18 +39,15 @@ def receive_pack(tuple):
 
             strData = rcv_data.decode();
             message = Message.fromString(strData)
-            self.messageBoard.lock();
+            messageBoard.lock();
             messageBoard.receiveMessage(message)
-            self.messageBoard.unlock();
+            messageBoard.unlock();
             print("Received message from " + str(message.getSender()) + " " + str(message.type))
 
     except Exception as e:
         print("something went wrong in receive_pack " + repr(tuple) + repr(e))
         #raise e
 
-
-class NoRecipientException(Exception):
-    pass
 
 class LoraMeshAdapter:
     def __init__(self, messageBoard, meshNetworkState):

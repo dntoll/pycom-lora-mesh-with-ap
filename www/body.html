@@ -35,12 +35,13 @@
 <fieldset>
 <legend>Send messages</legend>
 <form>
-Name    <input type='text' name='public' id=''><br/>
-Phone Number  <input type='text' name='phoneNumber' id=''><br/>
-Public Key    <input type='text' name='public' id=''><br/>
-Your Message <textarea name="name" rows="8" cols="80"></textarea>
+Name    <input type='text' name='public' id='sendMessageNameID'><br/>
+Phone Number  <input type='text' name='phoneNumber' id='sendMessagePhoneID'><br/>
+Public Key    <input type='text' name='public' id='sendMessagePublicKey'><br/>
+Mac    <input type='text' name='mac' id='sendMessageMacID'><br/>
+Your Message <textarea name="name" rows="8" cols="80" id='sendMessageMessage'></textarea>
 
-<button type="button" onclick="">Encrypt and send</button>
+<button type="button" onclick="c.sendMessageEncrypted()">Encrypt and send</button>
 </form>
 </fieldset>
 

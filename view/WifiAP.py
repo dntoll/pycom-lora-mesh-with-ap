@@ -26,12 +26,14 @@ class WifiAP:
         self.wlan.init(mode=WLAN.STA, antenna=WLAN.INT_ANT)
         found = False
         try:
+            print('Before scan...')
             nets = self.wlan.scan()
+            print('After scan.')
             for net in nets:
-                if net.ssid == 'Minecraft':
+                if net.ssid == 'pycomDevnet':
                     found = True
                     print('Network found!')
-                    self.wlan.connect(net.ssid, auth=(net.sec, 'GudmundsV4genIsTheBest'), timeout=5000)
+                    self.wlan.connect(net.ssid, auth=(net.sec, 'oNOS*4GY0G!1tqP&'), timeout=5000)
                     while not self.wlan.isconnected():
                         machine.idle() # save power while waiting
                         print('WLAN connection succeeded!')
