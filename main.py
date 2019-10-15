@@ -14,8 +14,8 @@ import view
 
 pycom.wifi_on_boot(False)
 pycom.heartbeat(False)
-
-app = LoraMeshChatApplication()
+fakeIt = True
+app = LoraMeshChatApplication(fakeIt)
 print("init done");
 while True:
     app.update()

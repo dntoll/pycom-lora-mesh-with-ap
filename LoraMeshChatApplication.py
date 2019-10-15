@@ -17,6 +17,8 @@ from model.MessageBoard import MessageBoard
 from model.Message import Message
 from model.PhoneBook import PhoneBook
 from model.LoraMeshAdapter import LoraMeshAdapter
+from model.FakeLoraMeshAdapter import FakeLoraMeshAdapter
+
 from model.MeshNetworkState import MeshNetworkState
 from model.NetworkNodeDecoration import NetworkNodeDecoration
 
@@ -34,7 +36,7 @@ import utime
 class LoraMeshChatApplication:
     """ Class for chatting over Lora """
 
-    def __init__(self):
+    def __init__(self, fakeIt):
         self.timeToSendSelfInfo = 10;
         self.ap = WifiAP()
 
@@ -45,7 +47,11 @@ class LoraMeshChatApplication:
         self.decoration = NetworkNodeDecoration(self.ap.ID, -1, -1, firmware)
         self.meshState = MeshNetworkState(self.decoration)
         self.messageBoard = MessageBoard(self.meshState, self.phoneBook)
-        self.mesh = LoraMeshAdapter(self.messageBoard, self.meshState)
+
+        if fakeIt:
+            self.mesh = FakeLoraMeshAdapter(self.messageBoard, self.meshState)
+        else:
+            self.mesh = LoraMeshAdapter(self.messageBoard, self.meshState)
 
 
         self.view = WebClientView(self.messageBoard, self.meshState)
