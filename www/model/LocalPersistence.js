@@ -23,8 +23,12 @@ function LocalPersistance() {
     if ( x === null)
       return ret;
     else {
-       ret.contacts = JSON.parse(x);
-       return ret
+        let jsonObjects = JSON.parse(x);
+        for (index in jsonObjects) {
+          let contact = jsonObjects[index];
+          ret.addContact(new Contact(contact.name, contact.phoneNumber, contact.publicKeyString, contact.time, contact.lastSeenMac))
+        }
+        return ret
     }
   }
 

@@ -44,6 +44,10 @@ class FakeLoraMeshAdapter:
             try:
                 theContent = message.toString();
                 ipTarget = self.meshNetworkState.getIPFromMac(message.target)
+                if ipTarget is self.MAC:
+                    self.messageBoard.receiveMessage(message)
+                else:
+                    self.messageBoard.receiveMessage(Message(message.content, message.sender, message.target, message.time, 0, Message.IS_ACK))
                 #self.s.sendto(theContent, (str(ipTarget), self.myport))
                 print('Sent message to ' + message.target + " : " + ipTarget + " " + str(message.type)) #, repr(theContent)))
             except NoRecipientException as nre:

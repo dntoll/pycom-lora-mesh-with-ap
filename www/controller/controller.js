@@ -25,12 +25,17 @@ function Controller(model, view, adminView) {
     view.setContactList();
   }
 
-  this.messageContact = function(phoneNumber) {
-    for (const contact of model.phoneBook.contacts) {
-      if (phoneNumber == contact.phoneNumber) {
-        view.messageContact(contact);
+  this.messageContact = function(index) {
+    for (const contact in model.phoneBook.contacts) {
+      if (contact == index) {
+        view.messageContact(model.phoneBook.contacts[index]);
       }
     }
+  }
+
+  this.removeContactFromPhoneBook = function(index) {
+    model.removeContact(model.phoneBook.contacts[index]);
+    view.setContactList();
   }
 
   this.sendMessageEncrypted = function() {
@@ -38,6 +43,8 @@ function Controller(model, view, adminView) {
 
     model.sendMessage(m, adminView);
   }
+
+
 }
 
 let m = new Model();

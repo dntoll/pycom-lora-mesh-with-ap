@@ -1,5 +1,5 @@
 function PersonalInformation(phone, name, passfrase) {
-  const Bits = 128;
+  const Bits = 512;
   var d = new Date();
   this.time = d.getTime();
   this.phone = phone;

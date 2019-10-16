@@ -80,10 +80,11 @@ function View(model) {
 
     html += "<table>";
     html += this.getContactHeader()
-    for (const contact of model.phoneBook.contacts) {
+    for (const index in model.phoneBook.contacts) {
+      const contact = model.phoneBook.contacts[index]
       html += "<tr>" +  this.getContactHTML(contact)
-      html += "<td><button type=\"button\" onclick=\"c.messageContact(\'"+contact.phoneNumber+"\')\">Message</button></td> "
-      html += "<td><button type=\"button\" onclick=\"c.removeContactFromPhoneBook(\'"+contact.phoneNumber+"\')\">Remove</button></td> "
+      html += "<td><button type=\"button\" onclick=\"c.messageContact(\'"+index+"\')\">Message</button></td> "
+      html += "<td><button type=\"button\" onclick=\"c.removeContactFromPhoneBook(\'"+index+"\')\">Remove</button></td> "
       html += "</tr>"
     }
     html +=  "</table>"

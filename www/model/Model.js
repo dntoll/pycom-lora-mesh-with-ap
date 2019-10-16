@@ -36,6 +36,11 @@ function Model() {
     persistance.storePhoneBook(this.phoneBook)
   }
 
+  this.removeContact = function(contact) {
+    this.phoneBook.removeContact(contact)
+    persistance.storePhoneBook(this.phoneBook)
+  }
+
   this.sendMessage = function(message, observer) {
     api.sendMessage(message, observer);
   }
