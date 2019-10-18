@@ -10,8 +10,13 @@
 
 __version__ = '1'
 
-from loramesh import Loramesh
-from network import LoRa
+import pycom
+import time
+from pymesh_config import PymeshConfig
+from pymesh import Pymesh
+
+#from loramesh import Loramesh
+#from network import LoRa
 from model.Message import Message
 from model.NoRecipientException import NoRecipientException
 import ubinascii
@@ -24,28 +29,26 @@ import json
 from builtins import int
 
 
-def receive_pack(tuple):
-    try:
-        #print("receive_pack:" + repr(tuple))
-        sockets, messageBoard = tuple
-        #print("receive_pack called")
-        # listen for incomming packets
-        for s in sockets:
-            rcv_data, rcv_addr = s.recvfrom(4096)
-            if len(rcv_data) == 0:
-                break
-            rcv_ip = rcv_addr[0]
-            rcv_port = rcv_addr[1]
+def receive_pack(rcv_ip, rcv_port, rcv_data):
 
-            strData = rcv_data.decode();
-            message = Message.fromString(strData)
-            messageBoard.lock();
-            messageBoard.receiveMessage(message)
-            messageBoard.unlock();
-            print("Received message from " + str(message.getSender()) + " " + str(message.type))
+    ''' callback triggered when a new packet arrived '''
+    print('Incoming %d bytes from %s (port %d):' %
+            (len(rcv_data), rcv_ip, rcv_port))
+    print(rcv_data)
+
+    try:
+        if len(rcv_data) == 0:
+            return
+
+        strData = rcv_data.decode();
+        message = Message.fromString(strData)
+        messageBoard.lock();
+        messageBoard.receiveMessage(message)
+        messageBoard.unlock();
+        print("Received message from " + str(message.getSender()) + " " + str(message.type))
 
     except Exception as e:
-        print("something went wrong in receive_pack " + repr(tuple) + repr(e))
+        print("something went wrong in receive_pack " + repr(e))
         #raise e
 
 
@@ -55,56 +58,38 @@ class LoraMeshAdapter:
         self.meshNetworkState = meshNetworkState;
 
 
-        self.lora = LoRa(mode=LoRa.LORA, region=LoRa.EU868, bandwidth=LoRa.BW_125KHZ, sf=7)
-        mac = self.lora.mac();
-        self.MAC = str(int.from_bytes(mac, 'big')) #str(ubinascii.hexlify(self.lora.mac()))[2:-1]
-        #print("MAC" + str(self.MAC));
-        print("pre loramesh")
-        self.mesh = Loramesh(self.lora)
-        print("Lora mesh complete")
-        sockets = []
-        self.s = socket.socket(socket.AF_LORA, socket.SOCK_RAW)
-        self.myport = 1234
-        self.s.bind(self.myport)
-        sockets.append(self.s)
-        self.mesh.mesh.rx_cb(receive_pack, (sockets, messageBoard))
+        pymesh_config = PymeshConfig.read_config()
+        self.pymesh = Pymesh(pymesh_config, receive_pack)
+
         self.pack_num = 0
 
-        self.meshNetworkState.setSelfInfo(self.mesh.ip(), self.MAC, self.mesh.state, self.mesh.rloc);
+    def getMAC(self):
+        return self.pymesh.mac();
 
-    def getIP(self):
-        return self.mesh.ip();
-
-    def getNeighbors(self):
-        return self.mesh.neighbors_ip();
+    def isConnected(self):
+        return self.pymesh.is_connected()
 
     def update(self):
         # check if topology changes, maybe RLOC IPv6 changed
-        self.meshNetworkState.setSelfInfo(self.mesh.ip(), self.MAC, self.mesh.state, self.mesh.rloc);
 
-        self.mesh.led_state()
-        if not self.mesh.is_connected():
-            print("%d: State %s, single %s"%(time.time(), self.mesh.cli('state'), self.mesh.cli('singleton')))
+        if not self.isConnected():
+            print("still not connected")
         else:
-            #Update mesh information
-            self.meshNetworkState.setNeighbors(self.mesh.neighbors(), self.mesh.neighbors_ip(), self.mesh.mesh.routers(), self.mesh.mesh.ipaddr())
-            neigbors = self.mesh.neighbors_ip()
-            print("%d neighbors, IPv6 list: %s"%(len(neigbors), neigbors))
+            print("connected")
 
             self.messageBoard.lock();
             for key, message in self.messageBoard.getMessagesToBeSent().items():
                 message.doSend();
                 try:
                     theContent = message.toString();
-                    ipTarget = self.meshNetworkState.getIPFromMac(message.target)
-                    self.s.sendto(theContent, (str(ipTarget), self.myport))
-                    print('Sent message to ' + message.target + " : " + ipTarget + " " + str(message.type)) #, repr(theContent)))
+
+                    self.pymesh.send_mess(message.target, theContent)
+                    print('Sent message to ' + message.target + " : " + str(message.type)) #, repr(theContent)))
                 except NoRecipientException as nre:
                     print("Could not send message to " + repr(message.target) + " since no ip was found...")
                 except Exception as e:
                     print("something went wrong when sending message " + repr(e) + " " + str(len(message.toString())))
-                    ipTarget = self.meshNetworkState.getIPFromMac(message.target)
-                    print('Tried to send message to ' + message.target + " " + str(ipTarget));
+                    print('Tried to send message to ' + message.target);
                     #raise e
             self.messageBoard.sendCompleted() #remove accs etc..
             self.messageBoard.unlock();

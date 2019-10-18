@@ -124,8 +124,8 @@ class WebClientView:
 
     def sendNeigborsJSON(self, connection):
         dict = {
-            "me" : self.meshNetworkState.getMyNodFullInformation(),
-            "others" : self.meshNetworkState.getOthersAsFullInformationList(),
+            "me" : self.meshNetworkState.getMe(),
+            "others" : self.meshNetworkState.getOthers(),
         }
         ret = ujson.dumps(dict)
         connection.send(ret)
