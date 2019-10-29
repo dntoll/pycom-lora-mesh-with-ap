@@ -11,9 +11,10 @@ import os
 class WebClientView:
 
 
-    def __init__(self, messageBoard, meshNetworkState):
+    def __init__(self, messageBoard, meshNetworkState, meshAdapter):
         self.messageBoard = messageBoard;
         self.meshNetworkState = meshNetworkState;
+        self.meshAdapter = meshAdapter;
 
     def handleRequest(self, cl_file):
 
@@ -56,14 +57,14 @@ class WebClientView:
         name = self.httpget.get("name")
         time = self.httpget.get("time")
         publicKeyString = self.httpget.get("publickey")
-        mac = self.meshNetworkState.getMac()
+        mac = self.meshAdapter.getMAC()
         return Contact(phoneNumber, name, publicKeyString, time, mac)
 
     def getMessage(self):
         mess = self.httpget.get("message")
         tar = self.httpget.get("target")
         time = self.httpget.get("time")
-        return Message(mess, tar, self.meshNetworkState.getMac(), time, 0, Message.IS_OPEN_MESSAGE)
+        return Message(mess, tar, self.meshAdapter.getMAC(), time, 0, Message.IS_OPEN_MESSAGE)
 
     def sendFavicon(self, connection):
         connection.send("poo")

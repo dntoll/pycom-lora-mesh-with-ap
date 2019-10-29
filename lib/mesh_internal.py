@@ -117,7 +117,10 @@ class MeshInternal:
     def __init__(self, meshaging, config, message_cb):
         """ Constructor """
         # enable Thread interface
+        print("pre Loramesh")
+        print(config)
         self.mesh = Loramesh(config)
+        print("post Loramesh")
 
         self.MAC = self.mesh.MAC
         self.sock = None

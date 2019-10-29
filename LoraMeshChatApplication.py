@@ -44,17 +44,21 @@ class LoraMeshChatApplication:
         print("Code firmware: " + str(firmware))
 
         self.phoneBook = PhoneBook()
-        self.decoration = NetworkNodeDecoration(self.ap.ID, -1, -1, firmware)
-        self.meshState = MeshNetworkState(self.decoration)
-        self.messageBoard = MessageBoard(self.meshState, self.phoneBook)
+
+        self.messageBoard = MessageBoard(self.phoneBook)
 
         #if fakeIt:
         #    self.mesh = FakeLoraMeshAdapter(self.messageBoard, self.meshState)
         #else:
-        self.mesh = LoraMeshAdapter(self.messageBoard, self.meshState)
+        self.mesh = LoraMeshAdapter(self.messageBoard)
+        self.decoration = NetworkNodeDecoration(self.ap.ID, self.mesh.getMAC(), firmware)
+        self.meshState = MeshNetworkState(self.decoration)
+
+        #eww is this circular dependencies?
+        self.messageBoard.setMessageState(self.meshState)
 
 
-        self.view = WebClientView(self.messageBoard, self.meshState)
+        self.view = WebClientView(self.messageBoard, self.meshState, self.mesh)
         self.controller = WebClientController(self.messageBoard, self.meshState, self.view, self.phoneBook)
 
         self.www = WebServer(self.controller)
@@ -70,5 +74,5 @@ class LoraMeshChatApplication:
         if self.timeToSendSelfInfo <= 0 and self.mesh.isConnected():
             self.timeToSendSelfInfo = 60;
             self.messageBoard.lock()
-            self.messageBoard.sendMessage( Message(self.decoration.toString(), Message.TYPE_BROADCAST, self.meshState.getMac(), utime.time(), 0, Message.IS_DECORATION))
+            self.messageBoard.sendMessage( Message(self.decoration.toString(), Message.TYPE_BROADCAST, self.mesh.getMAC(), utime.time(), 0, Message.IS_DECORATION))
             self.messageBoard.unlock()

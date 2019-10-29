@@ -13,6 +13,7 @@ import _thread
 try:
     from mesh_internal import MeshInternal
 except:
+    print("using _mesh_internal")
     from _mesh_internal import MeshInternal
 
 try:
@@ -53,7 +54,9 @@ class MeshInterface:
         self.lock = _thread.allocate_lock()
         self.meshaging = Meshaging(self.lock)
         self.config = config
+        print("pre MeshInternal")
         self.mesh = MeshInternal(self.meshaging, config, message_cb)
+        print("post MeshInternal")
         self.sleep_function = None
         self.single_leader_ts = 0
 

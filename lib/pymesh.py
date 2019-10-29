@@ -39,7 +39,9 @@ class Pymesh:
         # print MAC, set MAC is given and restart
 
         self.config = config
+        print("pre MeshInterface")
         self.mesh = MeshInterface(config, message_cb)
+        print("post MeshInterface")
 
         self.kill_all = False
         self.deepsleep_timeout = 0

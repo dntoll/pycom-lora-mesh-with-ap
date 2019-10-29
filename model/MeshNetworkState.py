@@ -22,8 +22,5 @@ class MeshNetworkState:
     def getMe(self):
         return self.selfDecoration;
 
-    def getMac(self):
-        return self.selfDecoration.mac
-
     def getAllNodesMacs(self):
         return self.others.keys();

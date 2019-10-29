@@ -53,13 +53,12 @@ def receive_pack(rcv_ip, rcv_port, rcv_data):
 
 
 class LoraMeshAdapter:
-    def __init__(self, messageBoard, meshNetworkState):
+    def __init__(self, messageBoard):
         self.messageBoard = messageBoard
-        self.meshNetworkState = meshNetworkState;
-
-
         pymesh_config = PymeshConfig.read_config()
+        print("pre Pymesh");
         self.pymesh = Pymesh(pymesh_config, receive_pack)
+        print("post Pymesh");
 
         self.pack_num = 0
 

@@ -15,11 +15,11 @@ from model.Message import Message
 from model.ContactRequest import ContactRequest
 
 class MessageBoard:
-    def __init__(self, meshState, phoneBook):
+    def __init__(self, phoneBook):
         self.received = {}
         self.toBeSent = {}
         self.sent = {}
-        self.meshState = meshState
+
         self.phoneBook = phoneBook
         self.myLock = _thread.allocate_lock()
 
@@ -34,9 +34,12 @@ class MessageBoard:
 
         self.toBeSent[messageHash] = message
 
+    def setMessageState(self, meshState):
+        self.meshState = meshState
 
     #Move this to the controller!
     def receiveMessage(self, message):
+
         messageHash = message.getUniqueID();
         #we only care about our own messages or broadcasts
         if self.meshState.isDirectedToMe(message.target):

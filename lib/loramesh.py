@@ -73,7 +73,10 @@ class Loramesh:
             frequency = config_lora.get("freq"),
             bandwidth = config_lora.get("bandwidth"),
             sf = config_lora.get("sf"))
+
+        print("pre self.lora.Mesh()")
         self.mesh = self.lora.Mesh() #start Mesh
+        print("post self.lora.Mesh()")
 
         # get Lora MAC address
         #self.MAC = str(ubinascii.hexlify(lora.mac()))[2:-1]
